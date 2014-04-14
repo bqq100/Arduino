@@ -124,7 +124,7 @@
 #define NO_ECHO 0               // Value returned if there's no ping echo within the specified MAX_SENSOR_DISTANCE or max_cm_distance.
 #define MAX_SENSOR_DELAY 18000  // Maximum uS it takes for sensor to start the ping (SRF06 is the highest measured, just under 18ms).
 #define ECHO_TIMER_FREQ 10      // Frequency to check for a ping echo (every 24uS is about 0.4cm accuracy).
-#define PING_MEDIAN_DELAY 29    // Millisecond delay between pings in the ping_median method.
+#define PING_MEDIAN_DELAY 50    // Millisecond delay between pings in the ping_median method.
 
 // Conversion from uS to distance (round result to nearest cm or inch).
 #define NewPingConvert(echoTime, conversionFactor) (max((echoTime + conversionFactor / 2) / conversionFactor, (echoTime ? 1 : 0)))
