@@ -1,7 +1,6 @@
 #include <EEPROM.h>
-#include <Ultrasonic.h>
+#include <NewPing.h>
 #include <QueueArray.h>
-#include <RunningMedian.h>
 
 const byte HI_LIM_ADDR = 0;
 const byte LO_LIM_ADDR = 2;
@@ -18,7 +17,7 @@ struct Config {
 Config readConfig();
 bool readCommand();
 
-Ultrasonic ultrasonic1(12,13);
+NewPing ultrasonic(12,13,500);
 
 unsigned long previousMillis = 0;        // will store last time LED was updated
 unsigned long interval = 1000;           // interval at which to blink (milliseconds)
@@ -36,8 +35,6 @@ int lastSecVal = 0;
 
 Config config;
 
-RunningMedian<int,10> lastSecond;
-
 void setup() {
  Serial.begin(9600);
  Serial.println("Liquid Level Detector");
@@ -46,22 +43,16 @@ void setup() {
  delay(1000);
  digitalWrite(8, HIGH); 
  config = readConfig();
+ ultrasonic.set_max_distance(config.height);
 }
 
 void loop()
 {
-  int sensor = ultrasonic1.Ranging(MM);
+  int sensor = ultrasonic.convert_mm(ultrasonic.ping_median(20));
   int level = config.height - sensor;
   bool flag = 0;
   
   if (level < config.height && level > 0){
-    lastSecond.add(level);
-    if (++i>=10){
-      i=0;
-      if (lastSecond.getMedian(lastSecVal) == lastSecond.OK){
-        flag = 1;
-      }
-    }
     missed = 0;
   }else{
     missed++;
@@ -106,6 +97,7 @@ void loop()
   }
   if (readCommand()){
     config = readConfig();
+    ultrasonic.set_max_distance(config.height);
     digitalWrite(8, LOW);
     delay(1000);
     digitalWrite(8, HIGH);
