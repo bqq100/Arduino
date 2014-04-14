@@ -28,6 +28,11 @@ NewPing::NewPing(uint8_t trigger_pin, uint8_t echo_pin, int max_cm_distance) {
 #endif
 }
 
+void NewPing::set_max_distance(int max_cm_distance) {
+        _maxEchoTime = min(max_cm_distance, MAX_SENSOR_DISTANCE) * US_ROUNDTRIP_CM + (US_ROUNDTRIP_CM / 2); // Calculate the maximum distance in uS.
+        return;
+}
+
 
 // ---------------------------------------------------------------------------
 // Standard ping methods
@@ -50,6 +55,12 @@ unsigned int NewPing::ping_in() {
 unsigned int NewPing::ping_cm() {
 	unsigned int echoTime = NewPing::ping();          // Calls the ping method and returns with the ping echo distance in uS.
 	return NewPingConvert(echoTime, US_ROUNDTRIP_CM); // Convert uS to centimeters.
+}
+
+
+unsigned int NewPing::ping_mm() {
+        unsigned int echoTime = NewPing::ping();          // Calls the ping method and returns with the ping echo distance in uS.
+        return NewPingConvert(echoTime, US_ROUNDTRIP_MM); // Convert uS to centimeters.
 }
 
 
@@ -228,4 +239,9 @@ unsigned int NewPing::convert_in(unsigned int echoTime) {
 
 unsigned int NewPing::convert_cm(unsigned int echoTime) {
 	return NewPingConvert(echoTime, US_ROUNDTRIP_CM); // Convert uS to centimeters.
+}
+
+
+unsigned int NewPing::convert_mm(unsigned int echoTime) {
+        return NewPingConvert(echoTime, US_ROUNDTRIP_MM); // Convert uS to centimeters.
 }
