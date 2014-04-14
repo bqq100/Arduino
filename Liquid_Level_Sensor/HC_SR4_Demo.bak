@@ -1,0 +1,102 @@
+#include "Ultrasonic.h"
+#include <QueueArray.h>
+Ultrasonic ultrasonic(12,13);
+
+long previousMillis = 0;        // will store last time LED was updated
+long interval = 60000;           // interval at which to blink (milliseconds)
+
+int errorFlag = 0;
+int pumpFlag = 0;
+int lowFlag = 0;
+int highFlag = 0;
+int missed = 0;
+
+int i = 0;
+int j = 0;
+int shortCount = 0;
+int longCount = 0;
+int dataArray[10];
+int longDataArray[60];
+
+int shortAverage = 0;
+int longAverage = 0;
+
+void setup() {
+ Serial.begin(9600);
+ Serial.println("HC-SR4 testing..");
+ pinMode(11,OUTPUT);
+ digitalWrite(11,HIGH);
+ delay(1000);
+}
+
+void loop()
+{
+  int value = ultrasonic.Ranging(CM);
+  if (value < 1000){
+    dataArray[i] = value;
+    if (++i>=10){i=0;}
+    if (shortCount<10){shortCount++;}
+    missed = 0;
+  }else{
+    missed++;
+  }
+
+  shortAverage = 0;
+  for (int k = 0; k < shortCount; k++){
+    shortAverage = shortAverage + dataArray[k];
+  }
+  shortAverage = shortAverage/shortCount;
+  
+  if (i == 1){
+    longDataArray[j] = shortAverage;
+    if (longCount<60){longCount++;}
+    if (++j>=60){j=0;}
+    longAverage = 0;
+    for (int k = 0; k < longCount; k++){
+      longAverage = longAverage + longDataArray[k];
+    }
+    longAverage = longAverage/longCount;
+  }
+
+  if (shortAverage > 210)
+    lowFlag = 1;
+  else 
+    lowFlag = 0;  
+  if(shortAverage < 130)
+    highFlag = 1;
+  else 
+    highFlag = 0;
+  if(longAverage < 145 && shortAverage < 160)
+    pumpFlag = 1;
+  else
+    pumpFlag = 0;
+  if (missed > 5)
+    errorFlag = 1;
+  else
+    errorFlag = 0;
+
+  char line[50];  
+  if (pumpFlag)
+    sprintf(line,"PUMP ON");
+  if (lowFlag)
+    sprintf(line,"ERROR: Water too low (%d mm)",shortAverage);
+  if (highFlag)
+    sprintf(line,"ERROR: Water too high (%d mm)",shortAverage);
+  if (errorFlag)
+    sprintf(line,"ERROR: Generic Error Detected");
+  if (pumpFlag || lowFlag || highFlag || errorFlag)
+    Serial.println(line);
+   
+  unsigned long currentMillis = millis();
+  if(currentMillis - previousMillis > interval) {
+    previousMillis = currentMillis;   
+    sprintf(line,"LongAvg: %d ShortAvg: %d Sensor: %d",longAverage,shortAverage,value);
+    Serial.println(line);
+  }
+   
+  delay(100);
+}
+
+
+
+
