@@ -31,8 +31,6 @@ uint8_t missed = 0;
 uint8_t i = 0;
 uint8_t j = 0;
 
-int lastSecVal = 0;
-
 Config config;
 
 void setup() {
@@ -59,15 +57,15 @@ void loop()
   }
   
   if (flag){
-    if (lastSecVal < config.loLimit)
+    if (level < config.loLimit)
       lowFlag = 1;
     else 
       lowFlag = 0;  
-    if(lastSecVal > config.hiLimit)
+    if(level > config.hiLimit)
       highFlag = 1;
     else 
       highFlag = 0;
-    if(lastSecVal < config.target)
+    if(level < config.target)
       pumpFlag = 1;
     else
       pumpFlag = 0;
@@ -81,9 +79,9 @@ void loop()
   if (pumpFlag)
     sprintf(line,"PUMP ON");
   if (lowFlag)
-    sprintf(line,"ERROR: Water too low (%d mm)",lastSecVal);
+    sprintf(line,"ERROR: Water too low (%d mm)",level);
   if (highFlag)
-    sprintf(line,"ERROR: Water too high (%d mm)",lastSecVal);
+    sprintf(line,"ERROR: Water too high (%d mm)",level);
   if (errorFlag)
     sprintf(line,"ERROR: Generic Error Detected");
   if (pumpFlag || lowFlag || highFlag || errorFlag)
@@ -92,7 +90,7 @@ void loop()
   unsigned long currentMillis = millis();
   if(currentMillis - previousMillis > interval) {
     previousMillis = currentMillis;   
-    sprintf(line,"ShortAvg: %d Value: %d Sensor1: %d Config: %d:%d:%d:%d",lastSecVal,level,sensor,config.hiLimit,config.loLimit,config.target,config.height);
+    sprintf(line,"Value: %d Sensor1: %d Config: %d:%d:%d:%d",level,sensor,config.hiLimit,config.loLimit,config.target,config.height);
     Serial.println(line);
   }
   if (readCommand()){
