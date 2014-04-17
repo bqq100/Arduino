@@ -12,9 +12,9 @@ void setup() {
 
 void loop()
 {
+  Ato ato;
   char line[100];
   while (true){
-    Ato ato;
     unsigned long currentMillis = millis();
     if(currentMillis - previousMillis > interval) {
       previousMillis = currentMillis;
