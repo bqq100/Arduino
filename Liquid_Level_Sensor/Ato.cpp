@@ -139,6 +139,6 @@ void Ato::setErrorFlag( bool status ){
 void Ato::resetBluetooth(){
   pinMode(BLUETOOTH_PIN, OUTPUT);
   digitalWrite(BLUETOOTH_PIN, LOW); 
-  delay(1000);
+  delay(10000);
   digitalWrite(BLUETOOTH_PIN, HIGH); 
 }

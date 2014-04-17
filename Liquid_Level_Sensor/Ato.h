@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "NewPing.h"
+#include <NewPing.h>
 #include "Config.h"
 
 const uint8_t TX_PIN = 12;
