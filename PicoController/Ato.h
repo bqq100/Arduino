@@ -1,31 +1,58 @@
 #include <Arduino.h>
+#include "Utilities.h"
 
-const uint8_t TX_PIN = 12;
-const uint8_t RX_PIN = 13;
-const uint8_t ATO_PIN = 14;
+const uint8_t HI_PIN = 9;
+const uint8_t LO_PIN = 8;
+const uint8_t ATO_PIN = 13;
 
 // Seconds
 const uint8_t MIN_ON_TIME = 10;
-const uint8_t MAX_ON_TIME = 60;
+const uint8_t MAX_ON_TIME = 30;  // was 60
 
 // Minutes
-const uint8_t WARN_TIME = 30;
-const uint8_t ALARM_TIME = 60;
+const uint8_t ALARM_TIME = 60; // was 60
+const uint8_t PUMP_ALARM_RESET_TIME = 60; // was 60
+const uint8_t MAX_DISABLE_TIME = 60;  // was 60
 
 class Ato{
   public:
     Ato();
-    void check();
+
+    void fullCheck();
+    
+    void disable();
+    void enable();
+    
+    bool quickLoCheck();
+    bool quickHiCheck();
+    
     bool getLoAlarm();
     bool getHiAlarm();
-    bool getLoWarn();
+    bool getPumpAlarm();
+    bool getPumpStatus();
+        
   private:
+    unsigned long pumpOnTime_;
+    unsigned long pumpAlarmTime_;
+    unsigned long loWaterTime_;
+    unsigned long hiWaterTime_;
+    unsigned long disableUntil_;
+    
+    bool disable_;
+    bool loAlarm_;
+    bool hiAlarm_;
+    bool pumpAlarm_;
+    bool pumpStatus_;    
+
+    bool genericCheck( uint8_t pin );
+
     void pumpOn();
     void pumpOff();
-    unsigned long pumpOnTime;
-    unsigned long alarmOnTime;
-    bool loAlarm;
-    bool hiAlarm;
-    bool loWarn;
-    bool pumpStatus;    
-}
+    void pumpInit();
+
+    void setPumpAlarm( bool flag );
+    void setLoAlarm( bool flag );
+    void setHiAlarm( bool flag );
+    
+    bool getDisableFlag();
+};
