@@ -2,9 +2,11 @@
 #include <OneWire.h>
 #include "Utilities.h"
     
-const uint8_t TEMP_PIN = 2;
-const uint8_t HEATER_PIN = 3;
+const uint8_t TEMP_PIN = 10;
+const uint8_t HEATER_PIN = 12;
 const unsigned long READ_DELAY = 750;
+
+const float CAL_FACTOR = -0.8;
 
 class Temp{
   public :
@@ -25,3 +27,4 @@ class Temp{
     void convertData();
 };
  
+

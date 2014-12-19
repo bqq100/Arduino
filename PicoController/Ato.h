@@ -2,7 +2,11 @@
 #include "Utilities.h"
 
 const uint8_t HI_PIN = 9;
+const bool    HI_INV = true;
+
 const uint8_t LO_PIN = 8;
+const bool    LO_INV = false;
+
 const uint8_t ATO_PIN = 13;
 
 // Seconds
@@ -36,6 +40,7 @@ class Ato{
     unsigned long pumpAlarmTime_;
     unsigned long loWaterTime_;
     unsigned long hiWaterTime_;
+    unsigned long lastOutput_;
     unsigned long disableUntil_;
     
     bool disable_;
@@ -56,3 +61,4 @@ class Ato{
     
     bool getDisableFlag();
 };
+

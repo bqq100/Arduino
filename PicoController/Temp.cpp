@@ -8,17 +8,14 @@ Temp::Temp() : sensor_( TEMP_PIN ){
 void Temp::check(){
   if ( !hasSensor_ )
     hasSensor_ = findSensor();
-  char tmp[10];
-  dtostrf(temperature_, 1, 1, tmp);
-  String str1 = "Temperature = " ;
-  String str2 = str1 + tmp;
   if ( !sensorReady_ )
     startConversion();
   else{
     lastTemperature_ = temperature_;
     if ( readSensor() ){
-      if ( temperature_ != lastTemperature_ )
-        Serial.println( str2 );
+      Serial.print( "Temperature = " );
+      Serial.print(temperature_,2);
+      Serial.print("\n");
     }
   }
 }
@@ -57,6 +54,7 @@ void Temp::convertData(){
   if (signBit)
     celcius = celcius * -1;
   temperature_ = celcius / 100 * 1.8 + 32;
+  temperature_ = temperature_ + CAL_FACTOR;
   return;  
 }
 
@@ -79,3 +77,4 @@ bool Temp::findSensor(){
   }
   return false;
 }
+

@@ -10,6 +10,7 @@ Ato::Ato(){
   setPumpAlarm ( false );
   loWaterTime_ = 0;
   disableUntil_ = 0;
+  lastOutput_ = 0;
 }
 
 void Ato::fullCheck(){
@@ -28,7 +29,13 @@ void Ato::fullCheck(){
     pumpOn();    
   else
     pumpOff();  
-
+  
+  if ( millis() > lastOutput_ + 1000 ){
+    lastOutput_ = millis();
+    Serial.println("Water Low: " + boolToString( waterLo ) );
+    Serial.println("Water High: " + boolToString( waterHi ) );
+    Serial.println("Pump Status: " + boolToString( getPumpStatus() ) );
+  }
 }
 
 void Ato::enable(){
@@ -42,6 +49,9 @@ void Ato::disable(){
 bool Ato::quickLoCheck(){
   bool loFlag = genericCheck( LO_PIN );
   
+  if ( LO_INV )
+    loFlag = !loFlag;
+  
   if ( loWaterTime_ == 0  && loFlag == true )
     loWaterTime_ = millis();
   if ( loFlag == false )
@@ -52,6 +62,9 @@ bool Ato::quickLoCheck(){
 
 bool Ato::quickHiCheck(){
   bool hiFlag = genericCheck( HI_PIN );
+
+  if ( HI_INV )
+    hiFlag = !hiFlag;
   
   if ( hiWaterTime_ == 0  && hiFlag == true )
     hiWaterTime_ = millis();
@@ -136,3 +149,4 @@ void Ato::pumpInit(){
   pumpOnTime_ = 0;
   digitalWrite( ATO_PIN, LOW );
 }
+
