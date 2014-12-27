@@ -1,5 +1,7 @@
 #include "Ato.h"
 
+// Constructor
+
 Ato::Ato(){
   pinMode( HI_PIN,  INPUT_PULLUP );
   pinMode( LO_PIN,  INPUT_PULLUP );
@@ -13,7 +15,9 @@ Ato::Ato(){
   lastOutput_ = 0;
 }
 
-void Ato::fullCheck(){
+// Public full check including reading inputs, setting alarms and turning on/off pump
+
+void Ato::check(){
 
   if ( getPumpAlarm() && millis() > pumpAlarmTime_ + (unsigned long)PUMP_ALARM_RESET_TIME * 1000 * 60 )
     setPumpAlarm(false);
@@ -32,11 +36,10 @@ void Ato::fullCheck(){
   
   if ( millis() > lastOutput_ + 1000 ){
     lastOutput_ = millis();
-    Serial.println("Water Low: " + boolToString( waterLo ) );
-    Serial.println("Water High: " + boolToString( waterHi ) );
-    Serial.println("Pump Status: " + boolToString( getPumpStatus() ) );
   }
 }
+
+// Public functions for enabling/disabling ATO for water changes etc
 
 void Ato::enable(){
   disableUntil_ = 0;
@@ -45,6 +48,8 @@ void Ato::enable(){
 void Ato::disable(){
   disableUntil_ = millis() + (unsigned long)MAX_DISABLE_TIME * 1000 * 60;
 }
+
+// Public functions for quickly checking current status of the float switches
 
 bool Ato::quickLoCheck(){
   bool loFlag = genericCheck( LO_PIN );
@@ -57,7 +62,10 @@ bool Ato::quickLoCheck(){
   if ( loFlag == false )
     loWaterTime_ = 0;
     
-  return loFlag;
+  if ( loFlag == true && millis() < loWaterTime_ + (unsigned long)DEBOUNCE_TIME * 1000 )
+    return false;
+  else
+    return loFlag;
 }
 
 bool Ato::quickHiCheck(){
@@ -91,6 +99,10 @@ bool Ato::getPumpAlarm(){
 bool Ato::getPumpStatus(){
   return pumpStatus_;
 }
+
+
+
+
 
 // Private Get Flag functions
 
@@ -131,7 +143,8 @@ void Ato::pumpOn(){
   if ( !getPumpStatus() ){
     pumpStatus_ = true;
     pumpOnTime_ = millis();
-    digitalWrite( ATO_PIN, HIGH );
+    if ( ATO_PIN )
+      digitalWrite( ATO_PIN, HIGH );
   }
 }
 
@@ -140,13 +153,15 @@ void Ato::pumpOff(){
   if ( getHiAlarm() || getDisableFlag() || ( getPumpStatus() && millis() > pumpOnTime_ + (unsigned long)MIN_ON_TIME * 1000 ) ){
     pumpStatus_ = false;
     pumpOnTime_ = 0;
-    digitalWrite( ATO_PIN, LOW );
+    if ( ATO_PIN )
+      digitalWrite( ATO_PIN, LOW );
   }
 }
 
 void Ato::pumpInit(){
   pumpStatus_ = false;
   pumpOnTime_ = 0;
-  digitalWrite( ATO_PIN, LOW );
+  if ( ATO_PIN )
+    digitalWrite( ATO_PIN, LOW );
 }
 

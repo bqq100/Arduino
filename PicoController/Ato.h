@@ -1,3 +1,6 @@
+#ifndef Ato_h
+#define Ato_h
+
 #include <Arduino.h>
 #include "Utilities.h"
 
@@ -12,6 +15,7 @@ const uint8_t ATO_PIN = 13;
 // Seconds
 const uint8_t MIN_ON_TIME = 10;
 const uint8_t MAX_ON_TIME = 30;  // was 60
+const uint8_t DEBOUNCE_TIME = 3;
 
 // Minutes
 const uint8_t ALARM_TIME = 60; // was 60
@@ -22,7 +26,7 @@ class Ato{
   public:
     Ato();
 
-    void fullCheck();
+    void check();
     
     void disable();
     void enable();
@@ -61,4 +65,6 @@ class Ato{
     
     bool getDisableFlag();
 };
+
+#endif
 

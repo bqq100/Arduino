@@ -1,12 +1,12 @@
 #include <OneWire.h>
-#include "Ato.h"
+#include "Utilities.h"
 #include "Return.h"
 #include "Temp.h"
+#include "Command.h"
+#include "Ato.h"
 
 void setup() 
 {
-  Serial.begin( 9600 );
-  Serial.println( "Controller Starting Up..." );
 }
 
 void loop()
@@ -14,9 +14,16 @@ void loop()
   Ato ato;
   Return returnPump;
   Temp temperature;
+  Command command;
+  
+  command.ato_ = &ato;
+  command.temperature_ = &temperature;
+  command.returnPump_ = &returnPump;
+  
   while (true){
-    ato.fullCheck();
+    ato.check();
     temperature.check();
+    command.check();
   }
 }
 

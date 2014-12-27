@@ -6,6 +6,3 @@ String boolToString(bool input){
   else
     return "false";
 }
-
-
-

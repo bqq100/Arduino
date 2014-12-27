@@ -1,3 +1,6 @@
+#ifndef Return_h
+#define Return_h
+
 #include <Arduino.h>
 
 const uint8_t RETURN_PIN = 11;
@@ -17,4 +20,4 @@ class Return{
     
 };
 
-
+#endif

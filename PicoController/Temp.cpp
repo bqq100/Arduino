@@ -1,49 +1,58 @@
 #include "Temp.h"
 
+// Constructor
+
 Temp::Temp() : sensor_( TEMP_PIN ){
   hasSensor_ = findSensor();
   sensorReady_ = 0;
+  heaterInit();
 }
+
+// Public full check function including turning on/off heater
 
 void Temp::check(){
   if ( !hasSensor_ )
     hasSensor_ = findSensor();
   if ( !sensorReady_ )
     startConversion();
-  else{
-    lastTemperature_ = temperature_;
+  else
     if ( readSensor() ){
-      Serial.print( "Temperature = " );
-      Serial.print(temperature_,2);
-      Serial.print("\n");
+      if ( getTemp() > HI_TEMP )
+        heaterOff();
+      if ( getTemp() < LO_TEMP )
+        heaterOn();
     }
-  }
 }
 
+// Public functions to access current status and temp
+
+bool Temp::getHeaterStatus(){
+  return heaterStatus_;
+}
+
+float Temp::getTemp(){
+  return temperature_;
+}
+
+// Private functions to read temp and convert to usable reading
+
 bool Temp::readSensor(){
+  byte data[2];
   if ( millis() < sensorReady_ )
     return false;
   if ( sensor_.reset() ){
     sensor_.select(addr_);
     sensor_.write(0XBE);
+    data[0] = sensor_.read();
+    data[1] = sensor_.read();
+    convertData(data[0], data[1]);
     sensorReady_ = 0;
-    readData();
     return true;
   }
   return false;
 }
 
-void Temp::readData(){
-  int i;
-  for (i=0; i<9; i++)
-    data_[i] = sensor_.read();
-  convertData();
-  return;
-}  
-
-void Temp::convertData(){
-  int loByte = data_[0];
-  int hiByte = data_[1];
+void Temp::convertData(int loByte, int hiByte){
   int tempReading = ( hiByte << 8 ) + loByte;
 
   int signBit = tempReading & 0x8000;
@@ -53,8 +62,10 @@ void Temp::convertData(){
   float celcius = ( 6 * tempReading ) + tempReading / 4;
   if (signBit)
     celcius = celcius * -1;
+    
   temperature_ = celcius / 100 * 1.8 + 32;
   temperature_ = temperature_ + CAL_FACTOR;
+
   return;  
 }
 
@@ -64,6 +75,8 @@ void Temp::startConversion(){
   sensor_.write(0x44,1);
   sensorReady_ = millis() + READ_DELAY;
 }
+
+// Private function to find the temp sensor
 
 bool Temp::findSensor(){
   sensor_.reset_search();
@@ -78,3 +91,26 @@ bool Temp::findSensor(){
   return false;
 }
 
+// Private Heater Functions
+
+void Temp::heaterOn(){
+  if ( !getHeaterStatus() ){
+    heaterStatus_ = true;
+    if ( HEATER_PIN )
+      digitalWrite( HEATER_PIN, HIGH );
+  }
+}
+
+void Temp::heaterOff(){
+  if ( getHeaterStatus() ){
+    heaterStatus_ = false;
+    if ( HEATER_PIN )
+      digitalWrite( HEATER_PIN, LOW );
+  }
+}
+
+void Temp::heaterInit(){
+  heaterStatus_ = false;
+  if ( HEATER_PIN )
+    digitalWrite( HEATER_PIN, LOW );
+}

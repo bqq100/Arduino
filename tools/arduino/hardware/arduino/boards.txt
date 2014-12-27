@@ -586,3 +586,23 @@ atmega328bb.build.f_cpu=8000000L
 atmega328bb.build.core=arduino:arduino
 atmega328bb.build.variant=arduino:standard
 
+##############################################################
+
+unointosc.name=Arduino Uno (8 MHz internal clock)
+unointosc.upload.protocol=arduino
+unointosc.upload.maximum_size=32256
+unointosc.upload.speed=57600
+unointosc.bootloader.low_fuses=0xe2
+unointosc.bootloader.high_fuses=0xde
+unointosc.bootloader.extended_fuses=0x05
+unointosc.bootloader.path=optiboot
+unointosc.bootloader.file=optiboot_atmega328.hex
+unointosc.bootloader.unlock_bits=0x2F
+unointosc.bootloader.lock_bits=0x0F
+unointosc.build.mcu=atmega328p
+unointosc.build.f_cpu=8000000L
+unointosc.build.core=arduino:arduino
+unointosc.build.variant=arduino:standard
+
+##############################################################
+
