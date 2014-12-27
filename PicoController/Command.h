@@ -8,16 +8,20 @@
 
 class Command{
   public :
-    Command();
+    Command(Ato* ato, Temp* temperature, Return* returnPump);
     void check();
-    Ato *ato_;
-    Temp *temperature_;
-    Return *returnPump_;
   private :
-    String command_;
-    String line_;
-    void output();
-    void processCommand();
+    Ato* ato_;
+    Temp* temperature_;
+    Return* returnPump_;
+    String input_;
+    unsigned long nextStatus_;
+    unsigned long autoStatus_;
+    int autoStatusFrequency_;
+    int maxAutoStatusHours_;
+    void output( String outputLine );
+    void processCommand( String input );
+    String status( String command, String option );
 };
  
 #endif

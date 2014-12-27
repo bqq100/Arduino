@@ -14,12 +14,8 @@ void loop()
   Ato ato;
   Return returnPump;
   Temp temperature;
-  Command command;
-  
-  command.ato_ = &ato;
-  command.temperature_ = &temperature;
-  command.returnPump_ = &returnPump;
-  
+  Command command(&ato, &temperature, &returnPump);
+    
   while (true){
     ato.check();
     temperature.check();
