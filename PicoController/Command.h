@@ -2,26 +2,45 @@
 #define Command_h
 
 #include <Arduino.h>
+#include "Setting.h"
 #include "Ato.h"
 #include "Temp.h"
 #include "Return.h"
 
+// Message Defines
+#define NEWLINE           F("\n\r")
+#define STARTUP_MSG       F("Controller Starting Up...")
+#define UPDATE_FREQ_MSG   F("Auto Status Update Frequency (UpdateFreq) = ")
+#define MAX_DURATION_MSG  F("Auto Status Max Duration (MaxAutoUpdate) = ")
+#define LO_SWITCH_MSG     F("Low Switch   : ")
+#define HI_SWITCH_MSG     F("High Switch  : ")
+#define PUMP_STATUS_MSG   F("Pump Status  : ")
+#define TEMP_STATUS_MSG   F("Temperature  : ")
+#define HEAT_STATUS_MSG   F("Heater Status: ")
+#define FREE_MEMORY_MSG   F("Free Memory  : ")
+#define LO_ALARM_MSG      F("ALARM: LOW WATER ALARM IS ON ( Low switch has been on too long... )")
+#define HI_ALARM_MSG      F("ALARM: HIGH WATER ALARM IS ON ( High switch is on... )")
+#define PUMP_ALARM_MSG    F("ALARM: PUMP ALARM IS ON ( Pump has run too long without filling... )")
+
 class Command{
   public :
-    Command(Ato* ato, Temp* temperature, Return* returnPump);
+    Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnPump);
     void check();
   private :
+    Setting* settings_;
     Ato* ato_;
     Temp* temperature_;
     Return* returnPump_;
     String input_;
     unsigned long nextStatus_;
     unsigned long autoStatus_;
-    int autoStatusFrequency_;
-    int maxAutoStatusHours_;
     void output( String outputLine );
+    bool isValidChar( int ascii );
+    void readChar();
     void processCommand( String input );
     String status( String command, String option );
+    String getSetting( String command, String option );
+    String setSetting( String command, String option );
 };
  
 #endif
