@@ -8,7 +8,7 @@
 struct Node {
   prog_char* name;
   prog_char* desc;
-//  String* unit;
+  prog_char* unit;
   float  value;
   Node*  next;
 };
@@ -16,12 +16,15 @@ struct Node {
 class Setting{
   public :
     Setting();
-    float   get( String variable );
-    String  getString( String variable );
-    String  set( String variable, float value );
+    float   get( String );
+    String  set( String, float );
+    String  getString( String );
   private :
-    void init( prog_char* name, prog_char* description, float value );
     Node* firstNode_;
+    void   init( prog_char* name, prog_char* description, float value );
+    Node*  findNode( String );
+    bool   compare( String, prog_char* );
+    String nodeDescription( Node*);
 };
  
 #endif
