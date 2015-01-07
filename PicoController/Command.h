@@ -10,8 +10,6 @@
 // Message Defines
 #define NEWLINE           F("\n\r")
 #define STARTUP_MSG       F("Controller Starting Up...")
-#define UPDATE_FREQ_MSG   F("Auto Status Update Frequency (UpdateFreq) = ")
-#define MAX_DURATION_MSG  F("Auto Status Max Duration (MaxAutoUpdate) = ")
 #define LO_SWITCH_MSG     F("Low Switch   : ")
 #define HI_SWITCH_MSG     F("High Switch  : ")
 #define PUMP_STATUS_MSG   F("Pump Status  : ")
@@ -25,6 +23,7 @@
 class Command{
   public :
     Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnPump);
+    Command(Setting* settings);
     void check();
   private :
     Setting* settings_;

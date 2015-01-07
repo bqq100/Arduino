@@ -6,8 +6,6 @@
 #include "Command.h"
 #include "Ato.h"
 
-void(* resetFunc) (void) = 0;//declare reset function at address 0 
-
 void setup() 
 {
 }
@@ -24,7 +22,7 @@ void loop()
     ato.check();
     temperature.check();
     command.check();
-    if ( freeRam() < 128 )
+    if ( freeRam() < 1024 )
       resetFunc(); //call reset
   }
 }

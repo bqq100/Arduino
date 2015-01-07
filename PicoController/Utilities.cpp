@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+void(* resetFunc) (void) = 0;//declare reset function at address 0
+
 String boolToString(bool input){
   if(input)
     return "true";
