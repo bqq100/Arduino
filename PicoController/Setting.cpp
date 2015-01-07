@@ -7,7 +7,6 @@ prog_char UPDATE_FREQ_UNIT[] PROGMEM = "secs";
 prog_char MAX_UPDATE_NAME[] PROGMEM = "MaxUpdateTime";
 prog_char MAX_UPDATE_DESC[] PROGMEM = "Auto Status Max Time";
 prog_char MAX_UPDATE_UNIT[] PROGMEM = "hrs";
-prog_uchar signMessage[] PROGMEM  = {"I AM PREDATOR,  UNSEEN COMBATANT. CREATED BY THE UNITED STATES DEPART"};
 
 Setting::Setting(){
   firstNode_ = 0;

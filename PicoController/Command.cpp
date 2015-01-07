@@ -13,8 +13,6 @@ Command::Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnP
 }
 
 Command::Command(Setting* settings){
-  Serial.begin( 9600 );
-  Serial.println( STARTUP_MSG );
   settings_ = settings;
   nextStatus_ = 0;
   autoStatus_ = 0;
@@ -22,11 +20,8 @@ Command::Command(Setting* settings){
 }
 
 void Command::check(){
-  Serial.print("PreCheck Free Mem: ");
-  Serial.println(freeRam());
-  
   if ( autoStatus_ && nextStatus_ && millis() > nextStatus_ )
-    status("status","");
+    getStatus("status","");
   if ( autoStatus_ && millis() > autoStatus_ )
     autoStatus_ = 0;
   
@@ -35,8 +30,6 @@ void Command::check(){
 }
 
 void Command::readChar(){
-    Serial.print("Pre Read Char Free Mem: ");
-    Serial.println(freeRam());
     char c = Serial.read();
     if ( c == '\n' || c == '\r' ){
       if ( input_.length() > 0 ){
@@ -65,9 +58,6 @@ bool Command::isValidChar( int ascii ){
 }
         
 void Command::processCommand( String input ){
-    Serial.print("Pre Process Free Mem: ");
-    Serial.println(freeRam());
-
   String command, option;
 
   if ( input.indexOf(':') > 0 ){
@@ -79,41 +69,62 @@ void Command::processCommand( String input ){
   }
 
   if ( command == "status" )
-    status( command, option );
+    getStatus( command, option );
   if ( command.startsWith("set") )
-    output( setSetting( command, option ) );
+    setSetting( command, option );
   if ( command.startsWith("get") )
-    output( getSetting( command, option ) );
+    getSetting( command, option );
+  if ( command == "memory" )
+    getMemory( command, option );
   if ( command == "reset" )
     resetFunc();
-
-    Serial.print("Post Process Free Mem: ");
-    Serial.println(freeRam());
-
-
+    
 }
 
 void Command::output(String outputLine){
   Serial.print(outputLine);
 }
 
-String Command::getSetting( String command, String option ){
+void Command::getSetting( String command, String option ){
   String setting,line;
   setting = command.substring(3);
   line = settings_->getString( setting );
-  return line;
+  output(line);
+  return;
 }
 
-String Command::setSetting( String command, String option ){
+void Command::setSetting( String command, String option ){
   String setting,line;
   setting = command.substring(3);
   line = settings_->set( setting, option.toFloat() );
-  return line;
+  output(line);
+  return;
 }
 
-String Command::status( String command, String option ){
-  Serial.print("Before Free Mem: ");
-  Serial.println(freeRam());
+void Command::getMemory( String command, String option ){
+  output( FREE_MEMORY_MSG, freeRam() );
+}
+
+void Command::output(const  __FlashStringHelper* message, int value){
+  Serial.print(message);
+  Serial.println(value);
+}
+
+void Command::output(const  __FlashStringHelper* message, bool value){
+  Serial.print(message);
+  Serial.println(boolToString(value));
+}
+
+void Command::output(const  __FlashStringHelper* message, float value){
+  Serial.print(message);
+  Serial.println(value);
+}
+
+void Command::output(const  __FlashStringHelper* message){
+  Serial.println(message);
+}
+
+void Command::getStatus( String command, String option ){
   if ( option == "stop" ){
     autoStatus_ = 0;
     nextStatus_ = 0;
@@ -125,44 +136,19 @@ String Command::status( String command, String option ){
   if ( autoStatus_ )
     nextStatus_ = millis() + (unsigned long)settings_->get("UpdateFreq") * 1000;
 
-  String line = "";
-  line = line + LO_SWITCH_MSG   + boolToString(ato_->quickLoCheck()) + NEWLINE;
-  output(line);
-  line = "";
-  line = line + HI_SWITCH_MSG   + boolToString(ato_->quickHiCheck()) + NEWLINE;
-  output(line);
-  line = "";
-  line = line + PUMP_STATUS_MSG + boolToString(ato_->getPumpStatus()) + NEWLINE;
-  output(line);
-  line = "";
-  line = line + TEMP_STATUS_MSG + temperature_->getTemp() + NEWLINE;
-  output(line);
-  line = "";
-  line = line + HEAT_STATUS_MSG + boolToString(temperature_->getHeaterStatus()) + NEWLINE;
-  output(line);
-  line = "";
-  line = line + FREE_MEMORY_MSG + freeRam() + NEWLINE;
-  output(line);
-  if ( ato_->getLoAlarm() ){
-    line = "";
-    line = line + LO_ALARM_MSG + NEWLINE;
-    output(line);
-  }
-  if ( ato_->getHiAlarm() ){
-    line = "";
-    line = line + HI_ALARM_MSG + NEWLINE;
-    output(line);
-  }
-  if ( ato_->getPumpAlarm() ){
-    line = "";
-    line = line + PUMP_ALARM_MSG + NEWLINE;
-    output(line);
-  }
-  
-  Serial.print("After Free Mem: ");
-  Serial.println(freeRam());
+  output( LO_SWITCH_MSG,   ato_->quickLoCheck() );
+  output( HI_SWITCH_MSG,   ato_->quickHiCheck() );
+  output( PUMP_STATUS_MSG, ato_->getPumpStatus() );
+  output( TEMP_STATUS_MSG, temperature_->getTemp() );
+  output( HEAT_STATUS_MSG, temperature_->getHeaterStatus() );
+  output( FREE_MEMORY_MSG, freeRam() );
 
+  if ( ato_->getLoAlarm() )
+    output( LO_ALARM_MSG );
+  if ( ato_->getHiAlarm() )
+    output( HI_ALARM_MSG );
+  if ( ato_->getPumpAlarm() )
+    output( PUMP_ALARM_MSG );
   
-  return line;
-
+  return;
 }
