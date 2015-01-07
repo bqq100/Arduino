@@ -32,7 +32,7 @@ void Setting::init ( prog_char* name, prog_char* description, float value ){
 }
 
 float Setting::get( String variable ){
-  Node* thisNode = findNode( variable )
+  Node* thisNode = findNode( variable );
   if ( thisNode )
     return thisNode->value;
   else
@@ -50,21 +50,21 @@ Node* Setting::findNode( String variable ){
 }
 
 String Setting::getString( String variable ){
-  Node* thisNode = findNode( variable )
+  Node* thisNode = findNode( variable );
   if ( thisNode )
     return nodeDescription( thisNode );
   else
-    return F("Could not find setting ") + variable;  
+    return "Could not find setting " + variable;  
 }
   
 String Setting::nodeDescription( Node* thisNode ){
   String message;
   char* description = new char[200];
   strcat_P( description, thisNode->desc );
-  strcat  ( description, F(" (") );
+  strcat  ( description, " (" );
   strcat_P( description, thisNode->name );
-  strcat  ( description, F(") = ") );
-  message = String(description) + searchNode->value;
+  strcat  ( description, ") = " );
+  message = String(description) + thisNode->value;
       
   // if ( searchNode->unit )
   // message = message + *searchNode->unit;
@@ -72,15 +72,15 @@ String Setting::nodeDescription( Node* thisNode ){
 }
  
 String Setting::set( String variable, float value ){
-  Node* thisNode = findNode( variable )
+  Node* thisNode = findNode( variable );
   if ( thisNode )
     thisNode->value = value;
   return getString( variable );
 }
   
 bool Setting::compare( String variable, prog_char* progMem ){
-  char variableArray[variable.length()+1];
-  variable.toCharArray(variableArray, variable.length()+1);
-  return strcmp_P(variableArray, progMemArray);
+  char variableArray[50];
+  variable.toCharArray(variableArray, 50);
+  return strcmp_P(variableArray, progMem);
 }
 
