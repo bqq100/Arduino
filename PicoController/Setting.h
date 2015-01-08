@@ -23,6 +23,7 @@ class Setting{
     float   get( String );
     String  set( String, float );
     String  getString( String );
+    String  getNextSetting( String );
     void    init( prog_char*, prog_char*, float );
     void    init( prog_char*, prog_char*, prog_char*, float );
     String  getError();
