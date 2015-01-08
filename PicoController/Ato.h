@@ -3,28 +3,45 @@
 
 #include <Arduino.h>
 #include "Utilities.h"
+#include "Setting.h"  
+  
+#define HI_PIN 9
+#define LO_PIN 8
+#define ATO_PIN 13
 
-const uint8_t HI_PIN = 9;
-const bool    HI_INV = true;
+static prog_char MIN_ON_NAME[] PROGMEM = "MinOnTime";
+static prog_char MIN_ON_DESC[] PROGMEM = "ATO Pump minimum on time";
+static prog_char MIN_ON_UNIT[] PROGMEM = "secs";
 
-const uint8_t LO_PIN = 8;
-const bool    LO_INV = false;
+static prog_char MAX_ON_NAME[] PROGMEM = "MaxOnTime";
+static prog_char MAX_ON_DESC[] PROGMEM = "ATO Pump maximum on time";
+static prog_char MAX_ON_UNIT[] PROGMEM = "secs";
 
-const uint8_t ATO_PIN = 13;
+static prog_char DEBOUNCE_NAME[] PROGMEM = "DebounceTime";
+static prog_char DEBOUNCE_DESC[] PROGMEM = "ATO switch debounce time";
+static prog_char DEBOUNCE_UNIT[] PROGMEM = "secs";
 
-// Seconds
-const uint8_t MIN_ON_TIME = 10;
-const uint8_t MAX_ON_TIME = 30;  // was 60
-const uint8_t DEBOUNCE_TIME = 3;
+static prog_char ALARM_NAME[] PROGMEM = "LowAlarmTime";
+static prog_char ALARM_DESC[] PROGMEM = "Time in Low Water state before raising alarm";
+static prog_char ALARM_UNIT[] PROGMEM = "min";
 
-// Minutes
-const uint8_t ALARM_TIME = 60; // was 60
-const uint8_t PUMP_ALARM_RESET_TIME = 60; // was 60
-const uint8_t MAX_DISABLE_TIME = 60;  // was 60
+static prog_char PUMP_ALARM_NAME[] PROGMEM = "PumpAlarmTime";
+static prog_char PUMP_ALARM_DESC[] PROGMEM = "Time between resetting pump alarm";
+static prog_char PUMP_ALARM_UNIT[] PROGMEM = "min";
+
+static prog_char MAX_DISABLE_NAME[] PROGMEM = "MaxDisableTime";
+static prog_char MAX_DISABLE_DESC[] PROGMEM = "Maximum amount of time ATO can be disabled";
+static prog_char MAX_DISABLE_UNIT[] PROGMEM = "min";
+
+static prog_char LO_INV_NAME[] PROGMEM = "InvLoSwitch";
+static prog_char LO_INV_DESC[] PROGMEM = "Invert Low Switch [ switch on is error state ]";
+
+static prog_char HI_INV_NAME[] PROGMEM = "InvHiSwitch";
+static prog_char HI_INV_DESC[] PROGMEM = "Invert Hi Switch [ switch on is error state ]";
 
 class Ato{
   public:
-    Ato();
+    Ato( Setting* );
 
     void check();
     
@@ -40,6 +57,8 @@ class Ato{
     bool getPumpStatus();
         
   private:
+    Setting* settings_;
+  
     unsigned long pumpOnTime_;
     unsigned long pumpAlarmTime_;
     unsigned long loWaterTime_;
