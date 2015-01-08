@@ -110,7 +110,9 @@ void Command::getSetting( String command, String option ){
 }
 
 void Command::getAllSettings( String command, String option ){
-//  String list = settings_->getList();
+  String thisSetting = ""; 
+  while ( thisSetting = settings_->getNextSetting( thisSetting ) )
+    getSetting( thisSetting );
   return;
 }
 
