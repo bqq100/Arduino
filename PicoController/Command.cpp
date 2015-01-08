@@ -1,15 +1,27 @@
 #include "Command.h"
 
+static prog_char UPDATE_FREQ_NAME[] PROGMEM = "UpdateFreq";
+static prog_char UPDATE_FREQ_DESC[] PROGMEM = "Auto Status Update Frequency";
+static prog_char UPDATE_FREQ_UNIT[] PROGMEM = "secs";
+
+static prog_char MAX_UPDATE_NAME[] PROGMEM = "MaxUpdateTime";
+static prog_char MAX_UPDATE_DESC[] PROGMEM = "Auto Status Max Time";
+static prog_char MAX_UPDATE_UNIT[] PROGMEM = "hrs";
+
 Command::Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnPump){
-  Serial.begin( 9600 );
-  Serial.println( STARTUP_MSG );
-  settings_ = settings;
-  ato_ = ato;
+
+  output( STARTUP_MSG );
+  
+  settings->init( &UPDATE_FREQ_NAME[0], &UPDATE_FREQ_DESC[0], &UPDATE_FREQ_UNIT[0], 5   );
+  settings->init( &MAX_UPDATE_NAME[0] , &MAX_UPDATE_DESC[0] , &MAX_UPDATE_UNIT[0] , 168 );
+ 
+  settings_    = settings;
+  ato_         = ato;
   temperature_ = temperature;
-  returnPump_ = returnPump;
-  nextStatus_ = 0;
-  autoStatus_ = 0;
-  input_ = "";
+  returnPump_  = returnPump;
+  nextStatus_  = 0;
+  autoStatus_  = 0;
+  input_       = "";
 }
 
 Command::Command(Setting* settings){
@@ -20,8 +32,10 @@ Command::Command(Setting* settings){
 }
 
 void Command::check(){
+  if ( settings_->getError().length() > 0 )
+    output( settings_->getError() );
   if ( autoStatus_ && nextStatus_ && millis() > nextStatus_ )
-    getStatus("status","");
+    getStatus(String(F("status")),"");
   if ( autoStatus_ && millis() > autoStatus_ )
     autoStatus_ = 0;
   
@@ -68,21 +82,23 @@ void Command::processCommand( String input ){
     option = "";
   }
 
-  if ( command == "status" )
+  if ( command == String(F("status")) )
     getStatus( command, option );
-  if ( command.startsWith("set") )
+  if ( command.startsWith(String(F("set"))) )
     setSetting( command, option );
-  if ( command.startsWith("get") )
+  if ( command.startsWith(String(F("get"))) && command != String(F("getAll")) )
     getSetting( command, option );
-  if ( command == "memory" )
+  if ( command == String(F("memory")) )
     getMemory( command, option );
-  if ( command == "reset" )
+  if ( command == String(F("reset")) )
     resetFunc();
+  if ( command == String(F("getAll")) )
+    getAllSettings( command, option );
     
 }
 
 void Command::output(String outputLine){
-  Serial.print(outputLine);
+  Serial.println(outputLine);
 }
 
 void Command::getSetting( String command, String option ){
@@ -90,6 +106,11 @@ void Command::getSetting( String command, String option ){
   setting = command.substring(3);
   line = settings_->getString( setting );
   output(line);
+  return;
+}
+
+void Command::getAllSettings( String command, String option ){
+//  String list = settings_->getList();
   return;
 }
 
@@ -106,18 +127,15 @@ void Command::getMemory( String command, String option ){
 }
 
 void Command::output(const  __FlashStringHelper* message, int value){
-  Serial.print(message);
-  Serial.println(value);
+  Serial.println( String(message) + String(value) );
 }
 
 void Command::output(const  __FlashStringHelper* message, bool value){
-  Serial.print(message);
-  Serial.println(boolToString(value));
+  Serial.println( String(message) + String(boolToString(value)) );
 }
 
 void Command::output(const  __FlashStringHelper* message, float value){
-  Serial.print(message);
-  Serial.println(value);
+  Serial.println( String(message) + String(value) );
 }
 
 void Command::output(const  __FlashStringHelper* message){
@@ -125,16 +143,16 @@ void Command::output(const  __FlashStringHelper* message){
 }
 
 void Command::getStatus( String command, String option ){
-  if ( option == "stop" ){
+  if ( option == String(F("stop")) ){
     autoStatus_ = 0;
     nextStatus_ = 0;
   }
 
-  if ( option == "start" )
-    autoStatus_ = millis() + (unsigned long)settings_->get("MaxUpdateTime") * 1000 * 60 * 60;
+  if ( option == String(F("start")) )
+    autoStatus_ = millis() + (unsigned long)settings_->get(String(F("MaxUpdateTime"))) * 1000 * 60 * 60;
 
   if ( autoStatus_ )
-    nextStatus_ = millis() + (unsigned long)settings_->get("UpdateFreq") * 1000;
+    nextStatus_ = millis() + (unsigned long)settings_->get(String(F("UpdateFreq"))) * 1000;
 
   output( LO_SWITCH_MSG,   ato_->quickLoCheck() );
   output( HI_SWITCH_MSG,   ato_->quickHiCheck() );

@@ -8,7 +8,6 @@
 #include "Return.h"
 
 // Message Defines
-#define NEWLINE           F("\n\r")
 #define STARTUP_MSG       F("Controller Starting Up...")
 #define LO_SWITCH_MSG     F("Low Switch    : ")
 #define HI_SWITCH_MSG     F("High Switch   : ")
@@ -25,6 +24,12 @@ class Command{
     Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnPump);
     Command(Setting* settings);
     void check();
+
+    static void output( String );
+    static void output( const __FlashStringHelper*, int   );
+    static void output( const __FlashStringHelper*, bool  );
+    static void output( const __FlashStringHelper*, float );
+    static void output( const __FlashStringHelper*        );
     
   private :
     Setting*      settings_;
@@ -45,12 +50,8 @@ class Command{
     void getMemory ( String, String );
     void getSetting( String, String );
     void setSetting( String, String );
+    void getAllSettings( String, String );
     
-    void output( String );
-    void output( const __FlashStringHelper*, int   );
-    void output( const __FlashStringHelper*, bool  );
-    void output( const __FlashStringHelper*, float );
-    void output( const __FlashStringHelper*        );
 };
  
 #endif
