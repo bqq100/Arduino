@@ -113,7 +113,7 @@ bool Setting::compare( String variable, prog_char* progMem ){
 String Setting::getNextSetting( String variable ){
   Node* nextNode;
   char variableArray[MAX_NAME_SIZE];
-  if ( variable.length == 0 )
+  if ( variable.length() == 0 )
     nextNode = firstNode_;
   else
     nextNode = findNode( variable )->next;
@@ -121,7 +121,7 @@ String Setting::getNextSetting( String variable ){
   if ( nextNode == 0 )
     return "";
     
-  strcpy_P(variableArray, thisNode->name);
+  strcpy_P(variableArray, nextNode->name);
   return String(variableArray);
     
 }
