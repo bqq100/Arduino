@@ -14,7 +14,7 @@ void setup()
 void loop()
 {
   Setting settings;
-  Ato ato;
+  Ato ato(&settings);
   Return returnPump;
   Temp temperature;
   Command command(&settings, &ato, &temperature, &returnPump);
@@ -23,7 +23,7 @@ void loop()
     ato.check();
     temperature.check();
     command.check();
-    if ( freeRam() < 1024 )
+    if ( freeRam() < 512 )
       resetFunc(); //call reset
   }
 }
