@@ -55,8 +55,20 @@ bool Setting::createNode( prog_char* name, prog_char* description, prog_char* un
   return true;
 }
 
+/*
 float Setting::get( String variable ){
   Node* thisNode = findNode( variable );
+  if ( thisNode )
+    return thisNode->value;
+  else
+    return -1;
+}
+*/
+
+float Setting::get( prog_char* name ){
+  char variableArray[MAX_NAME_SIZE];
+  strcpy_P(variableArray, name);
+  Node* thisNode = findNode( String(variableArray) );
   if ( thisNode )
     return thisNode->value;
   else
@@ -89,10 +101,12 @@ String Setting::nodeDescription( Node* thisNode ){
   strcat_P( description, thisNode->name );
   strcat  ( description, ") = " );
   message = String(description) + thisNode->value;
+  delete(description);
   if ( thisNode->unit ){
     char* unit = new char[MAX_UNIT_SIZE];
     strcpy_P( unit, thisNode->unit );
     message += String(F(" ")) + String(unit);
+    delete(unit);
   }
   return message;
 }

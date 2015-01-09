@@ -2,22 +2,24 @@
 #define Return_h
 
 #include <Arduino.h>
+#include "Setting.h" 
 
-const uint8_t RETURN_PIN = 11;
+#define RETURN_PIN 11
 
 class Return{
   public:
-    Return();
+    Return( Setting* );
     void enable();
     void disable();
     bool getPumpStatus();
     
   private:
-    bool pumpStatus_;
+    Setting* settings_;
+    bool     pumpStatus_;
+    
     void pumpOn();
     void pumpOff();
     void pumpInit();
-    
 };
 
 #endif

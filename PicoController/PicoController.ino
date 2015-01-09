@@ -15,15 +15,15 @@ void loop()
 {
   Setting settings;
   Ato ato(&settings);
-  Return returnPump;
-  Temp temperature;
+  Return returnPump(&settings);
+  Temp temperature(&settings);
   Command command(&settings, &ato, &temperature, &returnPump);
     
   while (true){
     ato.check();
     temperature.check();
     command.check();
-    if ( freeRam() < 512 )
+    if ( freeRam() < 1024 )
       resetFunc(); //call reset
   }
 }

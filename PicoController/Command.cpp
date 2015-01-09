@@ -1,13 +1,5 @@
 #include "Command.h"
 
-static prog_char UPDATE_FREQ_NAME[] PROGMEM = "UpdateFreq";
-static prog_char UPDATE_FREQ_DESC[] PROGMEM = "Auto Status Update Frequency";
-static prog_char UPDATE_FREQ_UNIT[] PROGMEM = "secs";
-
-static prog_char MAX_UPDATE_NAME[] PROGMEM = "MaxUpdateTime";
-static prog_char MAX_UPDATE_DESC[] PROGMEM = "Auto Status Max Time";
-static prog_char MAX_UPDATE_UNIT[] PROGMEM = "hrs";
-
 Command::Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnPump){
 
   output( STARTUP_MSG );
@@ -103,23 +95,30 @@ void Command::output(String outputLine){
 
 void Command::getSetting( String command, String option ){
   String setting,line;
-  setting = command.substring(3);
+  if ( command.startsWith(String(F("get"))) )
+    setting = command.substring(3);
+  else
+    setting = command;
   line = settings_->getString( setting );
   output(line);
   return;
 }
 
 void Command::getAllSettings( String command, String option ){
-  String thisSetting = ""; 
-  while ( thisSetting = settings_->getNextSetting( thisSetting ) )
+  String thisSetting = settings_->getNextSetting( "" );
+  while ( thisSetting.length() != 0 ){
     getSetting( thisSetting, "" );
+    thisSetting = settings_->getNextSetting( thisSetting );
+  }
   return;
 }
 
 void Command::setSetting( String command, String option ){
   String setting,line;
-  setting = command.substring(3);
-  line = settings_->set( setting, option.toFloat() );
+  if ( command.startsWith(String(F("set"))) )
+    setting = command.substring(3);
+  else
+    setting = command;  line = settings_->set( setting, option.toFloat() );
   output(line);
   return;
 }
@@ -151,10 +150,10 @@ void Command::getStatus( String command, String option ){
   }
 
   if ( option == String(F("start")) )
-    autoStatus_ = millis() + (unsigned long)settings_->get(String(F("MaxUpdateTime"))) * 1000 * 60 * 60;
+    autoStatus_ = millis() + (unsigned long)settings_->get( &MAX_UPDATE_NAME[0] ) * 1000 * 60 * 60;
 
   if ( autoStatus_ )
-    nextStatus_ = millis() + (unsigned long)settings_->get(String(F("UpdateFreq"))) * 1000;
+    nextStatus_ = millis() + (unsigned long)settings_->get( &UPDATE_FREQ_NAME[0] ) * 1000;
 
   output( LO_SWITCH_MSG,   ato_->quickLoCheck() );
   output( HI_SWITCH_MSG,   ato_->quickHiCheck() );

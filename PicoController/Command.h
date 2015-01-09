@@ -19,6 +19,14 @@
 #define HI_ALARM_MSG      F("ALARM: HIGH WATER ALARM IS ON ( High switch is on... )")
 #define PUMP_ALARM_MSG    F("ALARM: PUMP ALARM IS ON ( Pump has run too long without filling... )")
 
+static prog_char UPDATE_FREQ_NAME[] PROGMEM = "UpdateFreq";
+static prog_char UPDATE_FREQ_DESC[] PROGMEM = "Auto Status Update Frequency";
+static prog_char UPDATE_FREQ_UNIT[] PROGMEM = "secs";
+
+static prog_char MAX_UPDATE_NAME[] PROGMEM = "MaxUpdateTime";
+static prog_char MAX_UPDATE_DESC[] PROGMEM = "Auto Status Max Run Time";
+static prog_char MAX_UPDATE_UNIT[] PROGMEM = "hrs";
+
 class Command{
   public :
     Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnPump);

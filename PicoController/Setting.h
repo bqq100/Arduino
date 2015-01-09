@@ -20,7 +20,8 @@ struct Node {
 class Setting{
   public :
     Setting();
-    float   get( String );
+//  float   get( String );
+    float   get( prog_char* );
     String  set( String, float );
     String  getString( String );
     String  getNextSetting( String );

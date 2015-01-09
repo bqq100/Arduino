@@ -3,37 +3,45 @@
 
 #include <Arduino.h>
 #include <OneWire.h>
+#include "Setting.h" 
 #include "Utilities.h"
     
-const uint8_t TEMP_PIN = 10;
-const uint8_t HEATER_PIN = 12;
+#define TEMP_PIN   10
+#define HEATER_PIN 12
+#define READ_DELAY 750;
 
-const float HI_TEMP = 77.0;
-const float LO_TEMP = 76.0;
+static prog_char HI_TEMP_NAME[] PROGMEM = "HiTemp";
+static prog_char HI_TEMP_DESC[] PROGMEM = "Temp to turn off heater";
+static prog_char HI_TEMP_UNIT[] PROGMEM = "F";
 
-const float CAL_FACTOR = -0.8;
+static prog_char LO_TEMP_NAME[] PROGMEM = "LoTemp";
+static prog_char LO_TEMP_DESC[] PROGMEM = "Temp to turn on  heater";
+static prog_char LO_TEMP_UNIT[] PROGMEM = "F";
 
-const unsigned long READ_DELAY = 750;
+static prog_char CAL_FAC_NAME[] PROGMEM = "CalFactor";
+static prog_char CAL_FAC_DESC[] PROGMEM = "Temp sensor calibration";
+static prog_char CAL_FAC_UNIT[] PROGMEM = "F";
 
 class Temp{
   public :
-    Temp();
+    Temp( Setting* );
     void  check();
     bool  getHeaterStatus();
     float getTemp();
     
   private :
-    OneWire sensor_;
-    byte    addr_[8];
-    bool    hasSensor_;
-    bool    heaterStatus_;
-    float   temperature_;
+    OneWire  sensor_;
+    Setting* settings_;
+    byte     addr_[8];
+    bool     hasSensor_;
+    bool     heaterStatus_;
+    float    temperature_;
     unsigned long sensorReady_;
     
     bool findSensor();
     bool readSensor();
     void startConversion();
-    void convertData(int loByte, int hiByte);
+    void convertData(int, int);
     
     void heaterOn();
     void heaterOff();

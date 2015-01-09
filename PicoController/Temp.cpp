@@ -2,9 +2,15 @@
 
 // Constructor
 
-Temp::Temp() : sensor_( TEMP_PIN ){
-  hasSensor_ = findSensor();
+Temp::Temp( Setting* settings ) : sensor_( TEMP_PIN ){
+  
+  settings->init( &HI_TEMP_NAME[0], &HI_TEMP_DESC[0], &HI_TEMP_UNIT[0], 77.0 );
+  settings->init( &LO_TEMP_NAME[0], &LO_TEMP_DESC[0], &LO_TEMP_UNIT[0], 76.0 );
+  settings->init( &CAL_FAC_NAME[0], &CAL_FAC_DESC[0], &CAL_FAC_UNIT[0], -0.8 );
+  
+  hasSensor_   = findSensor();
   sensorReady_ = 0;
+  settings_    = settings;
   heaterInit();
 }
 
@@ -17,9 +23,9 @@ void Temp::check(){
     startConversion();
   else
     if ( readSensor() ){
-      if ( getTemp() > HI_TEMP )
+      if ( getTemp() > settings_->get( &HI_TEMP_NAME[0] ) )
         heaterOff();
-      if ( getTemp() < LO_TEMP )
+      if ( getTemp() < settings_->get( &LO_TEMP_NAME[0] ) )
         heaterOn();
     }
 }
@@ -64,7 +70,7 @@ void Temp::convertData(int loByte, int hiByte){
     celcius = celcius * -1;
     
   temperature_ = celcius / 100 * 1.8 + 32;
-  temperature_ = temperature_ + CAL_FACTOR;
+  temperature_ = temperature_ + settings_->get( &CAL_FAC_NAME[0] );
 
   return;  
 }

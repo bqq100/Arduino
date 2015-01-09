@@ -10,11 +10,11 @@
 #define ATO_PIN 13
 
 static prog_char MIN_ON_NAME[] PROGMEM = "MinOnTime";
-static prog_char MIN_ON_DESC[] PROGMEM = "ATO Pump minimum on time";
+static prog_char MIN_ON_DESC[] PROGMEM = "ATO pump minimum on time";
 static prog_char MIN_ON_UNIT[] PROGMEM = "secs";
 
 static prog_char MAX_ON_NAME[] PROGMEM = "MaxOnTime";
-static prog_char MAX_ON_DESC[] PROGMEM = "ATO Pump maximum on time";
+static prog_char MAX_ON_DESC[] PROGMEM = "ATO pump maximum on time";
 static prog_char MAX_ON_UNIT[] PROGMEM = "secs";
 
 static prog_char DEBOUNCE_NAME[] PROGMEM = "DebounceTime";
@@ -22,22 +22,22 @@ static prog_char DEBOUNCE_DESC[] PROGMEM = "ATO switch debounce time";
 static prog_char DEBOUNCE_UNIT[] PROGMEM = "secs";
 
 static prog_char ALARM_NAME[] PROGMEM = "LowAlarmTime";
-static prog_char ALARM_DESC[] PROGMEM = "Time in Low Water state before raising alarm";
+static prog_char ALARM_DESC[] PROGMEM = "ATO low water time before raising alarm";
 static prog_char ALARM_UNIT[] PROGMEM = "min";
 
 static prog_char PUMP_ALARM_NAME[] PROGMEM = "PumpAlarmTime";
-static prog_char PUMP_ALARM_DESC[] PROGMEM = "Time between resetting pump alarm";
+static prog_char PUMP_ALARM_DESC[] PROGMEM = "ATO time between resetting pump alarm";
 static prog_char PUMP_ALARM_UNIT[] PROGMEM = "min";
 
 static prog_char MAX_DISABLE_NAME[] PROGMEM = "MaxDisableTime";
-static prog_char MAX_DISABLE_DESC[] PROGMEM = "Maximum amount of time ATO can be disabled";
+static prog_char MAX_DISABLE_DESC[] PROGMEM = "ATO maximum time to be disabled";
 static prog_char MAX_DISABLE_UNIT[] PROGMEM = "min";
 
 static prog_char LO_INV_NAME[] PROGMEM = "InvLoSwitch";
-static prog_char LO_INV_DESC[] PROGMEM = "Invert Low Switch [ switch on is error state ]";
+static prog_char LO_INV_DESC[] PROGMEM = "ATO Invert Lo Switch [ switch off is error state ]";
 
 static prog_char HI_INV_NAME[] PROGMEM = "InvHiSwitch";
-static prog_char HI_INV_DESC[] PROGMEM = "Invert Hi Switch [ switch on is error state ]";
+static prog_char HI_INV_DESC[] PROGMEM = "ATO Invert Hi Switch [ switch off is error state ]";
 
 class Ato{
   public:

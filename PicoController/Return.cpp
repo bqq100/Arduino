@@ -1,9 +1,10 @@
 #include "Return.h"
 
-Return::Return(){
+Return::Return( Setting* settings ){
   if ( RETURN_PIN )
     pinMode( RETURN_PIN, OUTPUT );
   pumpInit();
+  settings_ = settings;
 }
 
 void Return::enable(){
