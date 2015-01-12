@@ -86,7 +86,17 @@ void Command::processCommand( String input ){
     resetFunc();
   if ( command == String(F("getAll")) )
     getAllSettings( command, option );
+  if ( command == String(F("ato")) )
+    getAto( command, option );
     
+}
+
+void Command::getAto( String command, String option ){
+  if ( option == String(F("enable")) )
+    ato_->enable();
+  if ( option == String(F("disable")) )
+    ato_->disable(); 
+  output( ATO_STATUS_MSG, ato_->getStatus() );
 }
 
 void Command::output(String outputLine){
@@ -155,6 +165,7 @@ void Command::getStatus( String command, String option ){
   if ( autoStatus_ )
     nextStatus_ = millis() + (unsigned long)settings_->get( &UPDATE_FREQ_NAME[0] ) * 1000;
 
+  output( ATO_STATUS_MSG,  ato_->getStatus() );
   output( LO_SWITCH_MSG,   ato_->quickLoCheck() );
   output( HI_SWITCH_MSG,   ato_->quickHiCheck() );
   output( PUMP_STATUS_MSG, ato_->getPumpStatus() );

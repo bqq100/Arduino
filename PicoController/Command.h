@@ -9,6 +9,7 @@
 
 // Message Defines
 #define STARTUP_MSG       F("Controller Starting Up...")
+#define ATO_STATUS_MSG    F("Low Switch    : ")
 #define LO_SWITCH_MSG     F("Low Switch    : ")
 #define HI_SWITCH_MSG     F("High Switch   : ")
 #define PUMP_STATUS_MSG   F("Pump Status   : ")
@@ -54,6 +55,7 @@ class Command{
 
     void processCommand( String );
     
+    void getAto    ( String, String );
     void getStatus ( String, String );
     void getMemory ( String, String );
     void getSetting( String, String );

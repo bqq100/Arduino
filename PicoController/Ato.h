@@ -51,6 +51,7 @@ class Ato{
     bool quickLoCheck();
     bool quickHiCheck();
     
+    bool getStatus();
     bool getLoAlarm();
     bool getHiAlarm();
     bool getPumpAlarm();

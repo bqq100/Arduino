@@ -54,6 +54,13 @@ void Ato::check(){
 
 // Public functions for enabling/disabling ATO for water changes etc
 
+bool Ato::getStatus(){
+  if ( disableUntil_ )
+    return false;
+  else
+    return true;
+}
+
 void Ato::enable(){
   disableUntil_ = 0;
 }
