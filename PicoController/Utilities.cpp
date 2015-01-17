@@ -9,10 +9,6 @@ String boolToString(bool input){
     return "false";
 }
 
-float timeToFloat( int hour, int minute, int second ){
-  return hour + minute/60 + second/60/60;
-}
-
 int freeRam () {
   extern int __heap_start, *__brkval; 
   int v; 

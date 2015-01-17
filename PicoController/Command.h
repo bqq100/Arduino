@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include "Setting.h"
+#include "Pump.h"
+#include "Module.h"
 #include "Ato.h"
 #include "Temp.h"
 #include "Return.h"

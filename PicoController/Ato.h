@@ -1,13 +1,10 @@
 #ifndef Ato_h
 #define Ato_h
 
-#include <Arduino.h>
-#include "Utilities.h"
-#include "Setting.h"  
-  
-#define ATO_HI_PIN 9
-#define ATO_LO_PIN 8
-#define ATO_PIN 13
+#define ATO_HI_PIN   9
+#define ATO_LO_PIN   8
+
+#include "Pump.h"
 
 static prog_char ATO_MIN_ON_NAME[] PROGMEM = "MinOnTime";
 static prog_char ATO_MIN_ON_DESC[] PROGMEM = "ATO pump minimum on time";
@@ -39,50 +36,37 @@ static prog_char ATO_LO_INV_DESC[] PROGMEM = "ATO Invert Lo Switch [ switch off 
 static prog_char ATO_HI_INV_NAME[] PROGMEM = "InvHiSwitch";
 static prog_char ATO_HI_INV_DESC[] PROGMEM = "ATO Invert Hi Switch [ switch off is error state ]";
 
-class Ato{
+class Ato: public Pump{
   public:
-    Ato( Setting* );
+    Ato( Setting*, uint8_t, uint8_t, uint8_t );
 
     void check();
     
-    void disable();
-    void enable();
-    
     bool quickLoCheck();
     bool quickHiCheck();
-    
-    bool getStatus();
+ 
     bool getLoAlarm();
     bool getHiAlarm();
     bool getPumpAlarm();
-    bool getPumpStatus();
         
   private:
-    Setting* settings_;
-  
     unsigned long pumpOnTime_;
     unsigned long pumpAlarmTime_;
     unsigned long loWaterTime_;
     unsigned long hiWaterTime_;
-    unsigned long disableUntil_;
     
-    bool disable_;
+    uint8_t atoLoPin_;
+    uint8_t atoHiPin_;
+    
     bool loAlarm_;
     bool hiAlarm_;
     bool pumpAlarm_;
-    bool pumpStatus_;    
-
+ 
     bool genericCheck( uint8_t pin );
 
-    void pumpOn();
-    void pumpOff();
-    void pumpInit();
-
     void setPumpAlarm( bool flag );
-    void setLoAlarm( bool flag );
-    void setHiAlarm( bool flag );
-    
-    bool getDisableFlag();
+    void setLoAlarm  ( bool flag );
+    void setHiAlarm  ( bool flag );
 };
 
 #endif

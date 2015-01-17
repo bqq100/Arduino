@@ -78,23 +78,23 @@ void Command::processCommand( String input ){
     option = "";
   }
 
-  if ( command == String(F("status")) )
+  if ( command == "status" )
     getStatus( command, option );
-  if ( command.startsWith(String(F("set"))) )
+  if ( command.startsWith( "set" ) )
     setSetting( command, option );
-  if ( command.startsWith(String(F("get"))) && command != String(F("getAll")) )
+  if ( command.startsWith( "get" ) && command != "getAll" )
     getSetting( command, option );
-  if ( command == String(F("memory")) )
+  if ( command == "memory" )
     getMemory( command, option );
-  if ( command == String(F("reset")) )
+  if ( command == "reset" )
     resetFunc();
-  if ( command == String(F("getAll")) )
+  if ( command == "getAll" )
     getAllSettings( command, option );
-  if ( command == String(F("ato")) )
+  if ( command == "ato" )
     getAto( command, option );
-  if ( command == String(F("return")) )
+  if ( command == "return" )
     getReturn( command, option );
-  if ( command == String(F("clock")) )
+  if ( command == "clock" )
     getClock( command, option );
     
 }
@@ -108,17 +108,17 @@ void Command::getClock( String command, String option ){
 }
 
 void Command::getAto( String command, String option ){
-  if ( option == String(F("enable")) )
+  if ( option == "enable" )
     ato_->enable();
-  if ( option == String(F("disable")) )
+  if ( option == "disable" )
     ato_->disable(); 
   output( ATO_STATUS_MSG, ato_->getStatus() );
 }
 
 void Command::getReturn( String command, String option ){
-  if ( option == String(F("enable")) )
+  if ( option == "enable" )
     returnPump_->enable();
-  if ( option == String(F("disable")) )
+  if ( option == "disable" )
     returnPump_->disable();
   output( RETURN_STATUS_MSG, returnPump_->getPumpStatus() );
 }
@@ -129,7 +129,7 @@ void Command::output(String value){
 
 void Command::getSetting( String command, String option ){
   String setting,line;
-  if ( command.startsWith(String(F("get"))) )
+  if ( command.startsWith("get") )
     setting = command.substring(3);
   else
     setting = command;
@@ -149,7 +149,7 @@ void Command::getAllSettings( String command, String option ){
 
 void Command::setSetting( String command, String option ){
   String setting,line;
-  if ( command.startsWith(String(F("set"))) )
+  if ( command.startsWith( "set" ) )
     setting = command.substring(3);
   else
     setting = command;  line = settings_->set( setting, option.toFloat() );
@@ -157,37 +157,37 @@ void Command::setSetting( String command, String option ){
   return;
 }
 
-void Command::getMemory( String command, String option ){
+void Command::getMemory(String command, String option ){
   output( FREE_MEMORY_MSG, freeRam() );
 }
 
-void Command::output(const  __FlashStringHelper* message, int value){
+void Command::output(const __FlashStringHelper* message, int value){
   Serial.println( String(message) + String(value) );
 }
 
-void Command::output(const  __FlashStringHelper* message, bool value){
+void Command::output(const __FlashStringHelper* message, bool value){
   Serial.println( String(message) + String(boolToString(value)) );
 }
 
-void Command::output(const  __FlashStringHelper* message, float value){
+void Command::output(const __FlashStringHelper* message, float value){
   Serial.println( String(message) + String(value) );
 }
 
-void Command::output(const  __FlashStringHelper* message, String value){
+void Command::output(const __FlashStringHelper* message, String value){
   Serial.println( String(message) + value );
 }
 
 void Command::output(const  __FlashStringHelper* message){
-  Serial.println(message);
+  Serial.println( String(message) );
 }
 
 void Command::getStatus( String command, String option ){
-  if ( option == String(F("stop")) ){
+  if ( option == "stop" ){
     autoStatus_ = 0;
     nextStatus_ = 0;
   }
 
-  if ( option == String(F("start")) )
+  if ( option == "start" )
     autoStatus_ = millis() + (unsigned long)settings_->get( &MAX_UPDATE_NAME[0] ) * 1000 * 60 * 60;
 
   if ( autoStatus_ )

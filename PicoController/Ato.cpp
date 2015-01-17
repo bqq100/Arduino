@@ -2,7 +2,7 @@
 
 // Constructor
 
-Ato::Ato( Setting* settings ){
+Ato::Ato( Setting* settings, uint8_t atoPumpPin, uint8_t atoHiPin, uint8_t atoLoPin ): Pump( settings, atoPumpPin ){
   
   settings->init( &ATO_ALARM_NAME[0]      , &ATO_ALARM_DESC[0]      , &ATO_ALARM_UNIT[0]      , 60 );
   settings->init( &ATO_MIN_ON_NAME[0]     , &ATO_MIN_ON_DESC[0]     , &ATO_MIN_ON_UNIT[0]     , 10 );
@@ -14,17 +14,15 @@ Ato::Ato( Setting* settings ){
   settings->init( &ATO_LO_INV_NAME[0], &ATO_LO_INV_DESC[0], 0 );
   settings->init( &ATO_HI_INV_NAME[0], &ATO_HI_INV_DESC[0], 1 );
   
-  pinMode( ATO_HI_PIN,  INPUT_PULLUP );
-  pinMode( ATO_LO_PIN,  INPUT_PULLUP );
-  pinMode( ATO_PIN, OUTPUT );
-  pumpInit();
+  pinMode( atoHiPin,  INPUT_PULLUP );
+  pinMode( atoLoPin,  INPUT_PULLUP );
   setLoAlarm   ( false );
   setHiAlarm   ( false );
   setPumpAlarm ( false );
   loWaterTime_  = 0;
-  disableUntil_ = 0;
-  settings_     = settings;
-  
+  atoHiPin_ = atoHiPin;
+  atoLoPin_ = atoLoPin;
+  maxDisableName_ = &ATO_MAX_DISABLE_NAME[0];
 }
 
 // Public full check including reading inputs, setting alarms and turning on/off pump
@@ -48,27 +46,9 @@ void Ato::check(){
   
 }
 
-// Public functions for enabling/disabling ATO for water changes etc
-
-bool Ato::getStatus(){
-  if ( disableUntil_ )
-    return false;
-  else
-    return true;
-}
-
-void Ato::enable(){
-  disableUntil_ = 0;
-}
-
-void Ato::disable(){
-  disableUntil_ = millis() + (unsigned long)settings_->get( &ATO_MAX_DISABLE_NAME[0] ) * 1000 * 60;
-}
-
 // Public functions for quickly checking current status of the float switches
-
 bool Ato::quickLoCheck(){
-  bool loFlag = genericCheck( ATO_LO_PIN );
+  bool loFlag = genericCheck( atoLoPin_ );
   
   if ( (bool)settings_->get( &ATO_LO_INV_NAME[0] ) )
     loFlag = !loFlag;
@@ -85,7 +65,7 @@ bool Ato::quickLoCheck(){
 }
 
 bool Ato::quickHiCheck(){
-  bool hiFlag = genericCheck( ATO_HI_PIN );
+  bool hiFlag = genericCheck( atoHiPin_ );
 
   if ( (bool)settings_->get( &ATO_HI_INV_NAME[0] ) )
     hiFlag = !hiFlag;
@@ -112,20 +92,6 @@ bool Ato::getPumpAlarm(){
   return pumpAlarm_;
 }
 
-bool Ato::getPumpStatus(){
-  return pumpStatus_;
-}
-
-
-
-
-
-// Private Get Flag functions
-
-bool Ato::getDisableFlag(){
-  bool flag = ( disableUntil_ && millis() < disableUntil_ );
-  return flag;
-}
 
 // Private Set Flag functions
 
@@ -153,31 +119,4 @@ bool Ato::genericCheck( uint8_t pin ){
     return false;
 }
 
-// Private Pump Functions
-
-void Ato::pumpOn(){
-  if ( !getPumpStatus() ){
-    pumpStatus_ = true;
-    pumpOnTime_ = millis();
-    if ( ATO_PIN )
-      digitalWrite( ATO_PIN, HIGH );
-  }
-}
-
-void Ato::pumpOff(){
-  // Hi alarm and manually disabled override minimum pump on time
-  if ( getHiAlarm() || getDisableFlag() || ( getPumpStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &ATO_MIN_ON_NAME[0] ) * 1000 ) ){
-    pumpStatus_ = false;
-    pumpOnTime_ = 0;
-    if ( ATO_PIN )
-      digitalWrite( ATO_PIN, LOW );
-  }
-}
-
-void Ato::pumpInit(){
-  pumpStatus_ = false;
-  pumpOnTime_ = 0;
-  if ( ATO_PIN )
-    digitalWrite( ATO_PIN, LOW );
-}
 

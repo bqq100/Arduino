@@ -26,9 +26,9 @@ void Setting::failedNode( prog_char* name ){
     nameArray[i] = (char)pgm_read_byte_near( name + i );
   nameArray[i] = (char)0;  
   if ( error_.length() > 0 )
-    error_ += String(F(",")) + String(nameArray);
+    error_ += "," + String(nameArray);
   else
-    error_ = String(F("Could initialize the following setting(s):")) + String(nameArray);  
+    error_ = "Could initialize the following setting(s):" + String(nameArray);  
 }
 
 bool Setting::createNode( prog_char* name, prog_char* description, prog_char* unit, float value ){
@@ -90,7 +90,7 @@ String Setting::getString( String variable ){
   if ( thisNode )
     return nodeDescription( thisNode );
   else
-    return String(F("Could not find setting ")) + variable;  
+    return "Could not find setting " + variable;  
 }
   
 String Setting::nodeDescription( Node* thisNode ){
@@ -105,7 +105,7 @@ String Setting::nodeDescription( Node* thisNode ){
   if ( thisNode->unit ){
     char* unit = new char[MAX_UNIT_SIZE];
     strcpy_P( unit, thisNode->unit );
-    message += String(F(" ")) + String(unit);
+    message += " " + String(unit);
     delete(unit);
   }
   return message;

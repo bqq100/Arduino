@@ -10,6 +10,12 @@
 #include "Command.h"
 #include "Ato.h"
 
+
+#define ATO_PUMP_PIN 13
+#define ATO_HI_PIN   9
+#define ATO_LO_PIN   8
+#define RETURN_PIN   11
+
 void setup() 
 {
   Serial.begin( 9600 );
@@ -19,8 +25,8 @@ void loop()
 {
   Setting settings;
   Clock clock(&settings);
-  Ato ato(&settings);
-  Return returnPump(&settings);
+  Ato ato(&settings, ATO_PUMP_PIN, ATO_HI_PIN, ATO_LO_PIN);
+  Return returnPump(&settings, RETURN_PIN);
   Temp temperature(&settings);
   Command command(&settings, &clock, &ato, &temperature, &returnPump);
     
