@@ -1,6 +1,6 @@
 #include "Command.h"
 
-Command::Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnPump){
+Command::Command(Setting* settings, Clock* clock, Ato* ato, Temp* temperature, Return* returnPump){
 
   output( STARTUP_MSG );
   
@@ -8,6 +8,7 @@ Command::Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnP
   settings->init( &MAX_UPDATE_NAME[0] , &MAX_UPDATE_DESC[0] , &MAX_UPDATE_UNIT[0] , 168 );
  
   settings_    = settings;
+  clock_       = clock;
   ato_         = ato;
   temperature_ = temperature;
   returnPump_  = returnPump;
@@ -16,8 +17,9 @@ Command::Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnP
   input_       = "";
 }
 
-Command::Command(Setting* settings){
+Command::Command(Setting* settings, Clock* clock){
   settings_ = settings;
+  clock_    = clock;
   nextStatus_ = 0;
   autoStatus_ = 0;
   input_ = "";
@@ -52,6 +54,8 @@ void Command::readChar(){
 } 
 
 bool Command::isValidChar( int ascii ){
+  if ( ascii == 92 || ascii == 47 )
+    return true;
   if ( ascii < 48 )
     return false;
   if ( ascii > 58 && ascii < 65 )
@@ -88,7 +92,19 @@ void Command::processCommand( String input ){
     getAllSettings( command, option );
   if ( command == String(F("ato")) )
     getAto( command, option );
+  if ( command == String(F("return")) )
+    getReturn( command, option );
+  if ( command == String(F("clock")) )
+    getClock( command, option );
     
+}
+
+void Command::getClock( String command, String option ){
+  if ( option.indexOf(":") > 0 )
+    clock_->setTime( option );
+  if ( option.indexOf("/") > 0 || option.indexOf("\\") > 0 )
+    clock_->setDate( option );
+  output( TIME_MSG, clock_->getDateString() + " " + clock_->getTimeString() );
 }
 
 void Command::getAto( String command, String option ){
@@ -99,8 +115,16 @@ void Command::getAto( String command, String option ){
   output( ATO_STATUS_MSG, ato_->getStatus() );
 }
 
-void Command::output(String outputLine){
-  Serial.println(outputLine);
+void Command::getReturn( String command, String option ){
+  if ( option == String(F("enable")) )
+    returnPump_->enable();
+  if ( option == String(F("disable")) )
+    returnPump_->disable();
+  output( RETURN_STATUS_MSG, returnPump_->getPumpStatus() );
+}
+
+void Command::output(String value){
+  Serial.println(value);
 }
 
 void Command::getSetting( String command, String option ){
@@ -149,6 +173,10 @@ void Command::output(const  __FlashStringHelper* message, float value){
   Serial.println( String(message) + String(value) );
 }
 
+void Command::output(const  __FlashStringHelper* message, String value){
+  Serial.println( String(message) + value );
+}
+
 void Command::output(const  __FlashStringHelper* message){
   Serial.println(message);
 }
@@ -165,6 +193,7 @@ void Command::getStatus( String command, String option ){
   if ( autoStatus_ )
     nextStatus_ = millis() + (unsigned long)settings_->get( &UPDATE_FREQ_NAME[0] ) * 1000;
 
+  output( TIME_MSG, clock_->getDateString() + " " + clock_->getTimeString() );
   output( ATO_STATUS_MSG,  ato_->getStatus() );
   output( LO_SWITCH_MSG,   ato_->quickLoCheck() );
   output( HI_SWITCH_MSG,   ato_->quickHiCheck() );

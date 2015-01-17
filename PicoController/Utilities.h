@@ -3,8 +3,9 @@
 
 extern void(* resetFunc) (void);//declare reset function at address 0
 
-String boolToString( bool input );
+String boolToString( bool );
 int freeRam();
+float timeToFloat( int, int, int );
 
 #endif
 

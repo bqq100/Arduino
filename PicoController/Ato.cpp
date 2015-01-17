@@ -4,18 +4,18 @@
 
 Ato::Ato( Setting* settings ){
   
-  settings->init( &ALARM_NAME[0]      , &ALARM_DESC[0]      , &ALARM_UNIT[0]      , 60 );
-  settings->init( &MIN_ON_NAME[0]     , &MIN_ON_DESC[0]     , &MIN_ON_UNIT[0]     , 10 );
-  settings->init( &MAX_ON_NAME[0]     , &MAX_ON_DESC[0]     , &MAX_ON_UNIT[0]     , 30 );
-  settings->init( &DEBOUNCE_NAME[0]   , &DEBOUNCE_DESC[0]   , &DEBOUNCE_UNIT[0]   , 3  );
-  settings->init( &PUMP_ALARM_NAME[0] , &PUMP_ALARM_DESC[0] , &PUMP_ALARM_UNIT[0] , 60 );
-  settings->init( &MAX_DISABLE_NAME[0], &MAX_DISABLE_DESC[0], &MAX_DISABLE_UNIT[0], 60 );
+  settings->init( &ATO_ALARM_NAME[0]      , &ATO_ALARM_DESC[0]      , &ATO_ALARM_UNIT[0]      , 60 );
+  settings->init( &ATO_MIN_ON_NAME[0]     , &ATO_MIN_ON_DESC[0]     , &ATO_MIN_ON_UNIT[0]     , 10 );
+  settings->init( &ATO_MAX_ON_NAME[0]     , &ATO_MAX_ON_DESC[0]     , &ATO_MAX_ON_UNIT[0]     , 30 );
+  settings->init( &ATO_DEBOUNCE_NAME[0]   , &ATO_DEBOUNCE_DESC[0]   , &ATO_DEBOUNCE_UNIT[0]   , 3  );
+  settings->init( &ATO_PUMP_ALARM_NAME[0] , &ATO_PUMP_ALARM_DESC[0] , &ATO_PUMP_ALARM_UNIT[0] , 60 );
+  settings->init( &ATO_MAX_DISABLE_NAME[0], &ATO_MAX_DISABLE_DESC[0], &ATO_MAX_DISABLE_UNIT[0], 60 );
 
-  settings->init( &LO_INV_NAME[0], &LO_INV_DESC[0], 0 );
-  settings->init( &HI_INV_NAME[0], &HI_INV_DESC[0], 1 );
+  settings->init( &ATO_LO_INV_NAME[0], &ATO_LO_INV_DESC[0], 0 );
+  settings->init( &ATO_HI_INV_NAME[0], &ATO_HI_INV_DESC[0], 1 );
   
-  pinMode( HI_PIN,  INPUT_PULLUP );
-  pinMode( LO_PIN,  INPUT_PULLUP );
+  pinMode( ATO_HI_PIN,  INPUT_PULLUP );
+  pinMode( ATO_LO_PIN,  INPUT_PULLUP );
   pinMode( ATO_PIN, OUTPUT );
   pumpInit();
   setLoAlarm   ( false );
@@ -23,7 +23,6 @@ Ato::Ato( Setting* settings ){
   setPumpAlarm ( false );
   loWaterTime_  = 0;
   disableUntil_ = 0;
-  lastOutput_   = 0;
   settings_     = settings;
   
 }
@@ -32,24 +31,21 @@ Ato::Ato( Setting* settings ){
 
 void Ato::check(){
 
-  if ( getPumpAlarm() && millis() > pumpAlarmTime_ + (unsigned long)settings_->get( &PUMP_ALARM_NAME[0] ) * 1000 * 60 )
+  if ( getPumpAlarm() && millis() > pumpAlarmTime_ + (unsigned long)settings_->get( &ATO_PUMP_ALARM_NAME[0] ) * 1000 * 60 )
     setPumpAlarm(false);
   
   bool waterLo = quickLoCheck();
   bool waterHi = quickHiCheck();
 
   setHiAlarm( waterHi );
-  setLoAlarm( waterLo && loWaterTime_ && millis() > loWaterTime_ + (unsigned long)settings_->get( &ALARM_NAME[0] ) * 1000 * 60 );
-  setPumpAlarm( getPumpAlarm() || ( getPumpStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &MAX_ON_NAME[0] ) * 1000 ) );
+  setLoAlarm( waterLo && loWaterTime_ && millis() > loWaterTime_ + (unsigned long)settings_->get( &ATO_ALARM_NAME[0] ) * 1000 * 60 );
+  setPumpAlarm( getPumpAlarm() || ( getPumpStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &ATO_MAX_ON_NAME[0] ) * 1000 ) );
   
   if ( waterLo && !getHiAlarm() && !getPumpAlarm() && !getDisableFlag() )  // Pump alarm should cover Low Alarm issues
     pumpOn();    
   else
     pumpOff();  
   
-  if ( millis() > lastOutput_ + 1000 ){
-    lastOutput_ = millis();
-  }
 }
 
 // Public functions for enabling/disabling ATO for water changes etc
@@ -66,15 +62,15 @@ void Ato::enable(){
 }
 
 void Ato::disable(){
-  disableUntil_ = millis() + (unsigned long)settings_->get( &MAX_DISABLE_NAME[0] ) * 1000 * 60;
+  disableUntil_ = millis() + (unsigned long)settings_->get( &ATO_MAX_DISABLE_NAME[0] ) * 1000 * 60;
 }
 
 // Public functions for quickly checking current status of the float switches
 
 bool Ato::quickLoCheck(){
-  bool loFlag = genericCheck( LO_PIN );
+  bool loFlag = genericCheck( ATO_LO_PIN );
   
-  if ( (bool)settings_->get( &LO_INV_NAME[0] ) )
+  if ( (bool)settings_->get( &ATO_LO_INV_NAME[0] ) )
     loFlag = !loFlag;
   
   if ( loWaterTime_ == 0  && loFlag == true )
@@ -82,16 +78,16 @@ bool Ato::quickLoCheck(){
   if ( loFlag == false )
     loWaterTime_ = 0;
     
-  if ( loFlag == true && millis() < loWaterTime_ + (unsigned long)settings_->get( &DEBOUNCE_NAME[0] ) * 1000 )
+  if ( loFlag == true && millis() < loWaterTime_ + (unsigned long)settings_->get( &ATO_DEBOUNCE_NAME[0] ) * 1000 )
     return false;
   else
     return loFlag;
 }
 
 bool Ato::quickHiCheck(){
-  bool hiFlag = genericCheck( HI_PIN );
+  bool hiFlag = genericCheck( ATO_HI_PIN );
 
-  if ( (bool)settings_->get( &HI_INV_NAME[0] ) )
+  if ( (bool)settings_->get( &ATO_HI_INV_NAME[0] ) )
     hiFlag = !hiFlag;
   
   if ( hiWaterTime_ == 0  && hiFlag == true )
@@ -170,7 +166,7 @@ void Ato::pumpOn(){
 
 void Ato::pumpOff(){
   // Hi alarm and manually disabled override minimum pump on time
-  if ( getHiAlarm() || getDisableFlag() || ( getPumpStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &MIN_ON_NAME[0] ) * 1000 ) ){
+  if ( getHiAlarm() || getDisableFlag() || ( getPumpStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &ATO_MIN_ON_NAME[0] ) * 1000 ) ){
     pumpStatus_ = false;
     pumpOnTime_ = 0;
     if ( ATO_PIN )

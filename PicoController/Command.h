@@ -6,13 +6,16 @@
 #include "Ato.h"
 #include "Temp.h"
 #include "Return.h"
+#include "Clock.h"
 
 // Message Defines
 #define STARTUP_MSG       F("Controller Starting Up...")
+#define TIME_MSG          F("Time          : ")
 #define ATO_STATUS_MSG    F("Low Switch    : ")
 #define LO_SWITCH_MSG     F("Low Switch    : ")
 #define HI_SWITCH_MSG     F("High Switch   : ")
 #define PUMP_STATUS_MSG   F("Pump Status   : ")
+#define RETURN_STATUS_MSG F("Return Status : ")
 #define TEMP_STATUS_MSG   F("Temperature   : ")
 #define HEAT_STATUS_MSG   F("Heater Status : ")
 #define FREE_MEMORY_MSG   F("Free Memory   : ")
@@ -30,21 +33,23 @@ static prog_char MAX_UPDATE_UNIT[] PROGMEM = "hrs";
 
 class Command{
   public :
-    Command(Setting* settings, Ato* ato, Temp* temperature, Return* returnPump);
-    Command(Setting* settings);
+    Command(Setting*, Clock*, Ato*, Temp*, Return*);
+    Command(Setting*, Clock*);
     void check();
 
     static void output( String );
-    static void output( const __FlashStringHelper*, int   );
-    static void output( const __FlashStringHelper*, bool  );
-    static void output( const __FlashStringHelper*, float );
-    static void output( const __FlashStringHelper*        );
+    static void output( const __FlashStringHelper*, int    );
+    static void output( const __FlashStringHelper*, bool   );
+    static void output( const __FlashStringHelper*, float  );
+    static void output( const __FlashStringHelper*, String );
+    static void output( const __FlashStringHelper*         );
     
   private :
     Setting*      settings_;
     Ato*          ato_;
     Temp*         temperature_;
     Return*       returnPump_;
+    Clock*        clock_;
     String        input_;
     unsigned long nextStatus_;
     unsigned long autoStatus_;
@@ -54,9 +59,11 @@ class Command{
     bool isValidChar( int );
 
     void processCommand( String );
-    
+
+    void getClock  ( String, String );    
     void getAto    ( String, String );
     void getStatus ( String, String );
+    void getReturn ( String, String );
     void getMemory ( String, String );
     void getSetting( String, String );
     void setSetting( String, String );
