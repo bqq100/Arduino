@@ -3,11 +3,12 @@
 
 #include <avr/pgmspace.h>
 #include <Arduino.h>
+#include <stdlib.h>
 
 const static int MAX_NAME_SIZE = 35;
 const static int MAX_DESC_SIZE = 100;
 const static int MAX_UNIT_SIZE = 10;
-const static int MAX_SIZE      = MAX_NAME_SIZE + MAX_DESC_SIZE + MAX_UNIT_SIZE + 10;
+const static int MAX_SIZE      = MAX_NAME_SIZE + MAX_DESC_SIZE + MAX_UNIT_SIZE + 50;
 
 struct Node {
   prog_char* name;

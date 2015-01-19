@@ -25,11 +25,11 @@ Command::Command(Setting* settings, Clock* clock){
   input_ = "";
 }
 
-void Command::check(){
+void Command::check( float currentTime ){
   if ( settings_->getError().length() > 0 )
     output( settings_->getError() );
   if ( autoStatus_ && nextStatus_ && millis() > nextStatus_ )
-    getStatus(String(F("status")),"");
+    getStatus("status","");
   if ( autoStatus_ && millis() > autoStatus_ )
     autoStatus_ = 0;
   
@@ -120,7 +120,7 @@ void Command::getReturn( String command, String option ){
     returnPump_->enable();
   if ( option == "disable" )
     returnPump_->disable();
-  output( RETURN_STATUS_MSG, returnPump_->getPumpStatus() );
+  output( RETURN_STATUS_MSG, returnPump_->getEquipStatus() );
 }
 
 void Command::output(String value){
@@ -197,9 +197,9 @@ void Command::getStatus( String command, String option ){
   output( ATO_STATUS_MSG,  ato_->getStatus() );
   output( LO_SWITCH_MSG,   ato_->quickLoCheck() );
   output( HI_SWITCH_MSG,   ato_->quickHiCheck() );
-  output( PUMP_STATUS_MSG, ato_->getPumpStatus() );
+  output( PUMP_STATUS_MSG, ato_->getEquipStatus() );
   output( TEMP_STATUS_MSG, temperature_->getTemp() );
-  output( HEAT_STATUS_MSG, temperature_->getHeaterStatus() );
+  output( HEAT_STATUS_MSG, temperature_->getEquipStatus() );
   output( FREE_MEMORY_MSG, freeRam() );
 
   if ( ato_->getLoAlarm() )

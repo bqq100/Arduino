@@ -100,14 +100,15 @@ String Setting::nodeDescription( Node* thisNode ){
   strcat  ( description, " (" );
   strcat_P( description, thisNode->name );
   strcat  ( description, ") = " );
-  message = String(description) + thisNode->value;
-  delete(description);
+  char value[10];
+  dtostrf(thisNode->value,4,1,value);
+  strcat  ( description, value );
   if ( thisNode->unit ){
-    char* unit = new char[MAX_UNIT_SIZE];
-    strcpy_P( unit, thisNode->unit );
-    message += " " + String(unit);
-    delete(unit);
+    strcat  ( description, " " );
+    strcat_P( description, thisNode->unit );
   }
+  message = String(description);
+  delete(description);
   return message;
 }
  

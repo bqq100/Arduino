@@ -2,7 +2,7 @@
 
 // Constructor
 
-Ato::Ato( Setting* settings, uint8_t atoPumpPin, uint8_t atoHiPin, uint8_t atoLoPin ): Pump( settings, atoPumpPin ){
+Ato::Ato( Setting* settings, uint8_t atoPumpPin, uint8_t atoHiPin, uint8_t atoLoPin ): Equip( settings, atoPumpPin ){
   
   settings->init( &ATO_ALARM_NAME[0]      , &ATO_ALARM_DESC[0]      , &ATO_ALARM_UNIT[0]      , 60 );
   settings->init( &ATO_MIN_ON_NAME[0]     , &ATO_MIN_ON_DESC[0]     , &ATO_MIN_ON_UNIT[0]     , 10 );
@@ -27,7 +27,7 @@ Ato::Ato( Setting* settings, uint8_t atoPumpPin, uint8_t atoHiPin, uint8_t atoLo
 
 // Public full check including reading inputs, setting alarms and turning on/off pump
 
-void Ato::check(){
+void Ato::check( float currentTime ){
 
   if ( getPumpAlarm() && millis() > pumpAlarmTime_ + (unsigned long)settings_->get( &ATO_PUMP_ALARM_NAME[0] ) * 1000 * 60 )
     setPumpAlarm(false);
@@ -37,12 +37,12 @@ void Ato::check(){
 
   setHiAlarm( waterHi );
   setLoAlarm( waterLo && loWaterTime_ && millis() > loWaterTime_ + (unsigned long)settings_->get( &ATO_ALARM_NAME[0] ) * 1000 * 60 );
-  setPumpAlarm( getPumpAlarm() || ( getPumpStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &ATO_MAX_ON_NAME[0] ) * 1000 ) );
+  setPumpAlarm( getPumpAlarm() || ( getEquipStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &ATO_MAX_ON_NAME[0] ) * 1000 ) );
   
   if ( waterLo && !getHiAlarm() && !getPumpAlarm() && !getDisableFlag() )  // Pump alarm should cover Low Alarm issues
-    pumpOn();    
+    equipOn();    
   else
-    pumpOff();  
+    equipOff();  
   
 }
 

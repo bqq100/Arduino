@@ -3,17 +3,18 @@
 
 #include <Arduino.h>
 #include "Setting.h"
-#include "Pump.h"
+#include "Equip.h"
 #include "Module.h"
 #include "Ato.h"
 #include "Temp.h"
 #include "Return.h"
 #include "Clock.h"
+#include "Utilities.h"
 
 // Message Defines
 #define STARTUP_MSG       F("Controller Starting Up...")
 #define TIME_MSG          F("Time          : ")
-#define ATO_STATUS_MSG    F("Low Switch    : ")
+#define ATO_STATUS_MSG    F("ATO Status    : ")
 #define LO_SWITCH_MSG     F("Low Switch    : ")
 #define HI_SWITCH_MSG     F("High Switch   : ")
 #define PUMP_STATUS_MSG   F("Pump Status   : ")
@@ -37,7 +38,7 @@ class Command{
   public :
     Command(Setting*, Clock*, Ato*, Temp*, Return*);
     Command(Setting*, Clock*);
-    void check();
+    void check( float );
 
     static void output( String );
     static void output( const __FlashStringHelper*, int    );

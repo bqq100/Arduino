@@ -1,10 +1,7 @@
 #ifndef Ato_h
 #define Ato_h
 
-#define ATO_HI_PIN   9
-#define ATO_LO_PIN   8
-
-#include "Pump.h"
+#include "Equip.h"
 
 static prog_char ATO_MIN_ON_NAME[] PROGMEM = "MinOnTime";
 static prog_char ATO_MIN_ON_DESC[] PROGMEM = "ATO pump minimum on time";
@@ -26,7 +23,7 @@ static prog_char ATO_PUMP_ALARM_NAME[] PROGMEM = "PumpAlarmTime";
 static prog_char ATO_PUMP_ALARM_DESC[] PROGMEM = "ATO time between resetting pump alarm";
 static prog_char ATO_PUMP_ALARM_UNIT[] PROGMEM = "min";
 
-static prog_char ATO_MAX_DISABLE_NAME[] PROGMEM = "MaxAtoDisableTime";
+static prog_char ATO_MAX_DISABLE_NAME[] PROGMEM = "AtoMaxDisableTime";
 static prog_char ATO_MAX_DISABLE_DESC[] PROGMEM = "ATO maximum time to be disabled";
 static prog_char ATO_MAX_DISABLE_UNIT[] PROGMEM = "min";
 
@@ -36,11 +33,11 @@ static prog_char ATO_LO_INV_DESC[] PROGMEM = "ATO Invert Lo Switch [ switch off 
 static prog_char ATO_HI_INV_NAME[] PROGMEM = "InvHiSwitch";
 static prog_char ATO_HI_INV_DESC[] PROGMEM = "ATO Invert Hi Switch [ switch off is error state ]";
 
-class Ato: public Pump{
+class Ato: public Equip{
   public:
     Ato( Setting*, uint8_t, uint8_t, uint8_t );
 
-    void check();
+    void check( float );
     
     bool quickLoCheck();
     bool quickHiCheck();

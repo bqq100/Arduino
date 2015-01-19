@@ -2,21 +2,21 @@
 
 // Constructor
 
-Temp::Temp( Setting* settings ) : sensor_( TEMP_PIN ){
+Temp::Temp( Setting* settings, uint8_t heaterPin, uint8_t tempPin ) : Equip( settings, heaterPin), sensor_( tempPin ){
   
   settings->init( &HI_TEMP_NAME[0], &HI_TEMP_DESC[0], &HI_TEMP_UNIT[0], 77.0 );
   settings->init( &LO_TEMP_NAME[0], &LO_TEMP_DESC[0], &LO_TEMP_UNIT[0], 76.0 );
   settings->init( &CAL_FAC_NAME[0], &CAL_FAC_DESC[0], &CAL_FAC_UNIT[0], -0.8 );
-  
+  tempPin_     = tempPin;
   hasSensor_   = findSensor();
   sensorReady_ = 0;
-  settings_    = settings;
-  heaterInit();
+  
+  //maxDisableName_ = &_MAX_DISABLE_NAME[0];
 }
 
 // Public full check function including turning on/off heater
 
-void Temp::check(){
+void Temp::check( float currentTime ){
   if ( !hasSensor_ )
     hasSensor_ = findSensor();
   if ( !sensorReady_ )
@@ -24,17 +24,13 @@ void Temp::check(){
   else
     if ( readSensor() ){
       if ( getTemp() > settings_->get( &HI_TEMP_NAME[0] ) )
-        heaterOff();
+        equipOff();
       if ( getTemp() < settings_->get( &LO_TEMP_NAME[0] ) )
-        heaterOn();
+        equipOn();
     }
 }
 
 // Public functions to access current status and temp
-
-bool Temp::getHeaterStatus(){
-  return heaterStatus_;
-}
 
 float Temp::getTemp(){
   return temperature_;
@@ -48,7 +44,7 @@ bool Temp::readSensor(){
     return false;
   if ( sensor_.reset() ){
     sensor_.select(addr_);
-    sensor_.write(0XBE);
+    sensor_.write (0XBE);
     data[0] = sensor_.read();
     data[1] = sensor_.read();
     convertData(data[0], data[1]);
@@ -95,28 +91,4 @@ bool Temp::findSensor(){
       continue;
   }
   return false;
-}
-
-// Private Heater Functions
-
-void Temp::heaterOn(){
-  if ( !getHeaterStatus() ){
-    heaterStatus_ = true;
-    if ( HEATER_PIN )
-      digitalWrite( HEATER_PIN, HIGH );
-  }
-}
-
-void Temp::heaterOff(){
-  if ( getHeaterStatus() ){
-    heaterStatus_ = false;
-    if ( HEATER_PIN )
-      digitalWrite( HEATER_PIN, LOW );
-  }
-}
-
-void Temp::heaterInit(){
-  heaterStatus_ = false;
-  if ( HEATER_PIN )
-    digitalWrite( HEATER_PIN, LOW );
 }

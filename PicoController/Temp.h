@@ -1,13 +1,9 @@
 #ifndef Temp_h
 #define Temp_h
 
-#include <Arduino.h>
 #include <OneWire.h>
-#include "Setting.h" 
-#include "Utilities.h"
-    
-#define TEMP_PIN   10
-#define HEATER_PIN 12
+#include "Equip.h"
+
 #define READ_DELAY 750;
 
 static prog_char HI_TEMP_NAME[] PROGMEM = "HiTemp";
@@ -22,19 +18,17 @@ static prog_char CAL_FAC_NAME[] PROGMEM = "CalFactor";
 static prog_char CAL_FAC_DESC[] PROGMEM = "Temp sensor calibration";
 static prog_char CAL_FAC_UNIT[] PROGMEM = "F";
 
-class Temp{
+class Temp: public Equip{
   public :
-    Temp( Setting* );
-    void  check();
-    bool  getHeaterStatus();
+    Temp( Setting*, uint8_t, uint8_t );
+    void  check( float );
     float getTemp();
     
   private :
+    uint8_t  tempPin_;
     OneWire  sensor_;
-    Setting* settings_;
     byte     addr_[8];
     bool     hasSensor_;
-    bool     heaterStatus_;
     float    temperature_;
     unsigned long sensorReady_;
     
@@ -42,10 +36,6 @@ class Temp{
     bool readSensor();
     void startConversion();
     void convertData(int, int);
-    
-    void heaterOn();
-    void heaterOff();
-    void heaterInit();
 };
  
 #endif
