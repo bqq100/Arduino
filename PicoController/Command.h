@@ -36,26 +36,27 @@ static prog_char MAX_UPDATE_UNIT[] PROGMEM = "hrs";
 
 class Command{
   public :
-    Command(Setting*, Clock*, Ato*, Temp*, Return*);
-    Command(Setting*, Clock*);
+    Command(Setting*, HardwareSerial*, Clock*, Ato*, Temp*, Return*);
+    Command(Setting*, HardwareSerial*, Clock*);
     void check( float );
 
-    static void output( String );
-    static void output( const __FlashStringHelper*, int    );
-    static void output( const __FlashStringHelper*, bool   );
-    static void output( const __FlashStringHelper*, float  );
-    static void output( const __FlashStringHelper*, String );
-    static void output( const __FlashStringHelper*         );
+    void output( String );
+    void output( const __FlashStringHelper*, int    );
+    void output( const __FlashStringHelper*, bool   );
+    void output( const __FlashStringHelper*, float  );
+    void output( const __FlashStringHelper*, String );
+    void output( const __FlashStringHelper*         );
     
   private :
-    Setting*      settings_;
-    Ato*          ato_;
-    Temp*         temperature_;
-    Return*       returnPump_;
-    Clock*        clock_;
-    String        input_;
-    unsigned long nextStatus_;
-    unsigned long autoStatus_;
+    Setting*        settings_;
+    Ato*            ato_;
+    Temp*           temperature_;
+    Return*         returnPump_;
+    Clock*          clock_;
+    HardwareSerial* serialPort_;
+    String          input_;
+    unsigned long   nextStatus_;
+    unsigned long   autoStatus_;
 
     void readChar();
 

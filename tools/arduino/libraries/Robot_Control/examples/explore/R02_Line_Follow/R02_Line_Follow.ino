@@ -18,6 +18,8 @@
  */
 
 #include <ArduinoRobot.h> // include the robot library
+#include <Wire.h>
+#include <SPI.h>
 
 long timerOrigin; // used for counting elapsed time
 
@@ -43,7 +45,7 @@ void setup() {
   // These are some general values that work for line following 
   // uncomment one or the other to see the different behaviors of the robot
   // Robot.lineFollowConfig(11, 5, 50, 10);
-  Robot.lineFollowConfig(14, 9, 50, 10);
+  Robot.lineFollowConfig(11, 7, 60, 5);
   
   //set the motor board into line-follow mode
   Robot.setMode(MODE_LINE_FOLLOW);  

@@ -23,9 +23,9 @@
 #define HEATER_PIN 12
 #define DOSER_PIN  5
 
+
 void setup() 
 {
-  Serial.begin( 9600 );
 }
 
 void loop()
@@ -37,7 +37,7 @@ void loop()
   Temp   temperature(&settings, HEATER_PIN    , TEMP_PIN                  );
   Doser  doser      (&settings, DOSER_PIN                                 );
   Return returnPump (&settings, RETURN_PIN                                );
-  Command command   (&settings, &clock, &ato, &temperature, &returnPump   );
+  Command command   (&settings, &Serial, &clock, &ato, &temperature, &returnPump   );
     
   while (true){
     light.check( clock.getTime() );

@@ -17,6 +17,9 @@
  */
 
 #include <ArduinoRobot.h> // include the robot library
+#include <Wire.h>
+#include <SPI.h>
+
 // include the utility function for ths sketch
 // see the details below
 #include <utility/RobotTextManager.h>  
@@ -27,15 +30,11 @@ void setup(){
   //necessary initialization sequence
   Robot.begin();
   Robot.beginTFT();
-  Robot.beginSpeaker(32000);
   Robot.beginSD();
 
   // show the logos from the SD card
   Robot.displayLogos();
   
-  // play the music file
-  Robot.playFile("menu.sqm");
-
   // clear the screen
   Robot.clearScreen();
   

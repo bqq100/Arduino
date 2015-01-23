@@ -1,6 +1,6 @@
 #include "Command.h"
 
-Command::Command(Setting* settings, Clock* clock, Ato* ato, Temp* temperature, Return* returnPump){
+Command::Command(Setting* settings, HardwareSerial* serialPort, Clock* clock, Ato* ato, Temp* temperature, Return* returnPump){
 
   output( STARTUP_MSG );
   
@@ -15,14 +15,19 @@ Command::Command(Setting* settings, Clock* clock, Ato* ato, Temp* temperature, R
   nextStatus_  = 0;
   autoStatus_  = 0;
   input_       = "";
+  serialPort_  = serialPort;
+
+  serialPort->begin(9600);
 }
 
-Command::Command(Setting* settings, Clock* clock){
+Command::Command(Setting* settings, HardwareSerial* serialPort, Clock* clock){
   settings_ = settings;
   clock_    = clock;
   nextStatus_ = 0;
   autoStatus_ = 0;
   input_ = "";
+  serialPort_ = serialPort; 
+  serialPort_->begin(9600);
 }
 
 void Command::check( float currentTime ){
@@ -33,12 +38,12 @@ void Command::check( float currentTime ){
   if ( autoStatus_ && millis() > autoStatus_ )
     autoStatus_ = 0;
   
-  while ( Serial.available() > 0 )
+  while ( serialPort_->available() > 0 )
     readChar();
 }
 
 void Command::readChar(){
-    char c = Serial.read();
+    char c = serialPort_->read();
     if ( c == '\n' || c == '\r' ){
       if ( input_.length() > 0 ){
         input_.trim();
@@ -80,7 +85,7 @@ void Command::processCommand( String input ){
 
   if ( command == "status" )
     getStatus( command, option );
-  if ( command.startsWith( "set" ) )
+  if ( command.startsWith( "set" ) ) // 1-2kb
     setSetting( command, option );
   if ( command.startsWith( "get" ) && command != "getAll" )
     getSetting( command, option );
@@ -88,13 +93,13 @@ void Command::processCommand( String input ){
     getMemory( command, option );
   if ( command == "reset" )
     resetFunc();
-  if ( command == "getAll" )
+  if ( command == "getAll" )  // 1-2kB
     getAllSettings( command, option );
   if ( command == "ato" )
     getAto( command, option );
   if ( command == "return" )
     getReturn( command, option );
-  if ( command == "clock" )
+  if ( command == "clock" )  // 2kB
     getClock( command, option );
     
 }
@@ -124,7 +129,7 @@ void Command::getReturn( String command, String option ){
 }
 
 void Command::output(String value){
-  Serial.println(value);
+  serialPort_->println(value);
 }
 
 void Command::getSetting( String command, String option ){
@@ -162,23 +167,23 @@ void Command::getMemory(String command, String option ){
 }
 
 void Command::output(const __FlashStringHelper* message, int value){
-  Serial.println( String(message) + String(value) );
+  serialPort_->println( String(message) + String(value) );
 }
 
 void Command::output(const __FlashStringHelper* message, bool value){
-  Serial.println( String(message) + String(boolToString(value)) );
+  serialPort_->println( String(message) + String(boolToString(value)) );
 }
 
 void Command::output(const __FlashStringHelper* message, float value){
-  Serial.println( String(message) + String(value) );
+  serialPort_->println( String(message) + String(value) );
 }
 
 void Command::output(const __FlashStringHelper* message, String value){
-  Serial.println( String(message) + value );
+  serialPort_->println( String(message) + value );
 }
 
 void Command::output(const  __FlashStringHelper* message){
-  Serial.println( String(message) );
+  serialPort_->println( String(message) );
 }
 
 void Command::getStatus( String command, String option ){
