@@ -33,8 +33,21 @@ class Light: public Module{
   public:
     Light( Setting*, uint8_t, uint8_t );
     void check( float );
+    float getBrightness();
     
   private:
+    Setting* settings_;
+    uint8_t  dimmerPin1_;
+    uint8_t  dimmerPin2_;
+    float    brightness_;
+    
+    void  setLights( float );
+    void  setDimmer( uint8_t, float );
+    float calcRampPercent( float, float, float );
+    float getStartTime();
+    float getEndTime();
+    float getStartPeakTime();
+    float getEndPeakTime();  
 };
 
 #endif

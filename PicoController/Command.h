@@ -5,6 +5,8 @@
 #include "Setting.h"
 #include "Equip.h"
 #include "Module.h"
+#include "Light.h"
+#include "Doser.h"
 #include "Ato.h"
 #include "Temp.h"
 #include "Return.h"
@@ -13,15 +15,16 @@
 
 // Message Defines
 #define STARTUP_MSG       F("Controller Starting Up...")
-#define TIME_MSG          F("Time          : ")
-#define ATO_STATUS_MSG    F("ATO Status    : ")
-#define LO_SWITCH_MSG     F("Low Switch    : ")
-#define HI_SWITCH_MSG     F("High Switch   : ")
-#define PUMP_STATUS_MSG   F("Pump Status   : ")
-#define RETURN_STATUS_MSG F("Return Status : ")
-#define TEMP_STATUS_MSG   F("Temperature   : ")
-#define HEAT_STATUS_MSG   F("Heater Status : ")
-#define FREE_MEMORY_MSG   F("Free Memory   : ")
+#define TIME_MSG          F("Time             : ")
+#define LO_SWITCH_MSG     F("Low Switch       : ")
+#define HI_SWITCH_MSG     F("High Switch      : ")
+#define ATO_STATUS_MSG    F("ATO Status       : ")
+#define RETURN_STATUS_MSG F("Return Status    : ")
+#define TEMP_STATUS_MSG   F("Temperature      : ")
+#define HEAT_STATUS_MSG   F("Heater Status    : ")
+#define DOSER_STATUS_MSG  F("Doser Status     : ")
+#define LIGHT_STATUS_MSG  F("Light Brightness : ")
+#define FREE_MEMORY_MSG   F("Free Memory      : ")
 #define LO_ALARM_MSG      F("ALARM: LOW WATER ALARM IS ON ( Low switch has been on too long... )")
 #define HI_ALARM_MSG      F("ALARM: HIGH WATER ALARM IS ON ( High switch is on... )")
 #define PUMP_ALARM_MSG    F("ALARM: PUMP ALARM IS ON ( Pump has run too long without filling... )")
@@ -36,24 +39,25 @@ static prog_char MAX_UPDATE_UNIT[] PROGMEM = "hrs";
 
 class Command{
   public :
-    Command(Setting*, HardwareSerial*, Clock*, Ato*, Temp*, Return*);
-    Command(Setting*, HardwareSerial*, Clock*);
+    Command(Setting*, Clock*, Light*, Doser*, Ato*, Temp*, Return*);
+    Command(Setting*, Clock*);
     void check( float );
 
     void output( String );
-    void output( const __FlashStringHelper*, int    );
-    void output( const __FlashStringHelper*, bool   );
-    void output( const __FlashStringHelper*, float  );
-    void output( const __FlashStringHelper*, String );
+    void output( const __FlashStringHelper*, int    , bool );
+    void output( const __FlashStringHelper*, bool   , bool );
+    void output( const __FlashStringHelper*, float  , bool );
+    void output( const __FlashStringHelper*, String , bool );
     void output( const __FlashStringHelper*         );
     
   private :
     Setting*        settings_;
+    Light*          light_;
+    Doser*          doser_;
     Ato*            ato_;
     Temp*           temperature_;
     Return*         returnPump_;
     Clock*          clock_;
-    HardwareSerial* serialPort_;
     String          input_;
     unsigned long   nextStatus_;
     unsigned long   autoStatus_;
@@ -65,6 +69,8 @@ class Command{
     void processCommand( String );
 
     void getClock  ( String, String );    
+    void getLight  ( String, String );
+    void getDoser  ( String, String );
     void getAto    ( String, String );
     void getStatus ( String, String );
     void getReturn ( String, String );

@@ -17,7 +17,6 @@ class Module{
     Setting* settings_;
     prog_char* maxDisableName_;
 
-    bool getDisableFlag();
 };
 
 #endif

@@ -7,10 +7,8 @@ Module::Module( Setting* settings ){
 
 // Public functions for enabling/disabling Module
 bool Module::getStatus(){
-  if ( disableUntil_ )
-    return false;
-  else
-    return true;
+  bool flag = ( disableUntil_ && millis() < disableUntil_ );
+  return !flag;
 }
 
 void Module::enable(){
@@ -21,7 +19,3 @@ void Module::disable(){
   disableUntil_ = millis() + (unsigned long)settings_->get( maxDisableName_ ) * 1000 * 60;
 }
 
-bool Module::getDisableFlag(){
-  bool flag = ( disableUntil_ && millis() < disableUntil_ );
-  return flag;
-}

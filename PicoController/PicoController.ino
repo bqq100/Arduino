@@ -12,7 +12,6 @@
 #include "Light.h"
 #include "Doser.h"
 
-
 #define ATO_PUMP_PIN   13
 #define ATO_HI_PIN     9
 #define ATO_LO_PIN     8
@@ -22,7 +21,6 @@
 #define TEMP_PIN   10
 #define HEATER_PIN 12
 #define DOSER_PIN  5
-
 
 void setup() 
 {
@@ -37,7 +35,7 @@ void loop()
   Temp   temperature(&settings, HEATER_PIN    , TEMP_PIN                  );
   Doser  doser      (&settings, DOSER_PIN                                 );
   Return returnPump (&settings, RETURN_PIN                                );
-  Command command   (&settings, &Serial, &clock, &ato, &temperature, &returnPump   );
+  Command command   (&settings, &clock, &light, &doser, &ato, &temperature, &returnPump   );
     
   while (true){
     light.check( clock.getTime() );
@@ -46,7 +44,7 @@ void loop()
     returnPump.check ( clock.getTime() );
     temperature.check( clock.getTime() );
     command.check    ( clock.getTime() );
-    if ( freeRam() < 768 )
+    if ( freeRam() < 512 )
       resetFunc(); //call reset
   }
 }

@@ -6,7 +6,7 @@ Return::Return( Setting* settings, uint8_t returnPin ): Equip( settings, returnP
 }
 
 void Return::check( float currentTime ){
-  if ( !getDisableFlag() )
+  if ( getStatus() )
     equipOn();
   else
     equipOff();

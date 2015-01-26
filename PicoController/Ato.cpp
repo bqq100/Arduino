@@ -39,7 +39,7 @@ void Ato::check( float currentTime ){
   setLoAlarm( waterLo && loWaterTime_ && millis() > loWaterTime_ + (unsigned long)settings_->get( &ATO_ALARM_NAME[0] ) * 1000 * 60 );
   setPumpAlarm( getPumpAlarm() || ( getEquipStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &ATO_MAX_ON_NAME[0] ) * 1000 ) );
   
-  if ( waterLo && !getHiAlarm() && !getPumpAlarm() && !getDisableFlag() )  // Pump alarm should cover Low Alarm issues
+  if ( waterLo && !getHiAlarm() && !getPumpAlarm() && getStatus() )  // Pump alarm should cover Low Alarm issues
     equipOn();    
   else
     equipOff();  
