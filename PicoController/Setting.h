@@ -4,6 +4,7 @@
 #include <avr/pgmspace.h>
 #include <Arduino.h>
 #include <stdlib.h>
+#include "Utilities.h"
 
 const static int MAX_NAME_SIZE = 35;
 const static int MAX_DESC_SIZE = 100;
@@ -21,11 +22,10 @@ struct Node {
 class Setting{
   public :
     Setting();
-//  float   get( String );
     float   get( prog_char* );
-    String  set( String, float );
-    String  getString( String );
-    String  getNextSetting( String );
+    void    set( char*, float );
+    void    getString( char* );
+    void    getNextSetting( char* );
     void    init( prog_char*, prog_char*, float );
     void    init( prog_char*, prog_char*, prog_char*, float );
     String  getError();
@@ -34,9 +34,9 @@ class Setting{
     String error_;
     bool   createNode( prog_char*, prog_char*, prog_char*, float );
     void   failedNode( prog_char* );
-    Node*  findNode( String );
-    bool   compare( String, prog_char* );
-    String nodeDescription( Node*);
+    Node*  findNode( char* );
+    bool   equal( char*, prog_char* );
+    void   nodeDescription( char*, Node*);
 };
  
 #endif

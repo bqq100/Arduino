@@ -2,15 +2,35 @@
 
 Clock::Clock( Setting* settings ){
   tmElements_t time;
+
+  settings_ = settings;
+  prevEpochTick_ = 0;
+  epoch_ = 0;
+
   bool timeRead = RTC.read(time);
   rtcMode_ = RTC.chipPresent();
   
   if ( !timeRead )
     initClk();
-
-  settings_ = settings;
 }
 
+void Clock::check(){
+  unsigned long nowMillis = millis();
+  bool tickNow = false;
+  if ( prevEpochTick_ >= 4294966295 && nowMillis < 1000 && nowMillis > prevEpochTick_ - 4294966295 )
+    tickNow = true;
+  else if ( nowMillis > prevEpochTick_ + 1000 )
+    tickNow = true;
+    
+  if ( tickNow ){
+    epoch_++;
+    prevEpochTick_ += 1000;
+  }
+} 
+
+unsigned long Clock::getEpoch(){
+  return epoch_;
+}
 
 float Clock::getTime(){
   return timeToFloat( getRtcTime() );
@@ -30,7 +50,7 @@ String Clock::getTimeString(){
 
 String Clock::getDateString(){
   tmElements_t date = getRtcTime();
-  return formatString( date.Month ) + "/" + formatString( date.Month ) + "/" + formatString( date.Year + 1970 ); 
+  return formatString( date.Month ) + "/" + formatString( date.Day ) + "/" + formatString( date.Year + 1970 ); 
 }
 
 int Clock::getWeekday(){
@@ -55,7 +75,8 @@ void Clock::setSecond( String second ){
   setRtcTime( time );
 }
 
-void Clock::setTime( String newTime ){
+void Clock::setTime( char* timeParam ){
+  String newTime = String(timeParam);
   int firstSeperator = newTime.indexOf(':');
   int secondSeperator = newTime.lastIndexOf(':');
   String hour = newTime.substring(0,firstSeperator);
@@ -89,7 +110,9 @@ void Clock::setYear( String year ){
   setRtcTime( time );
 }
 
-void Clock::setDate( String newDate ){
+void Clock::setDate( char* dateParam ){
+  String newDate = String( dateParam );
+
   int firstSeperator;
   int secondSeperator;
   if ( newDate.indexOf('/') > 0 ){
@@ -99,14 +122,14 @@ void Clock::setDate( String newDate ){
     firstSeperator = newDate.indexOf("\\");
     secondSeperator = newDate.lastIndexOf("\\");
   }
-  
+
   String month = newDate.substring(0,firstSeperator);
   String day   = newDate.substring(firstSeperator + 1, secondSeperator);
   String year  = newDate.substring(secondSeperator + 1);
   int numericYear = year.toInt();
   if ( numericYear < 100 )
     numericYear += 2000;
-  
+
   tmElements_t time = getRtcTime();
   time.Month = month.toInt();
   time.Day = day.toInt();
@@ -133,7 +156,7 @@ void Clock::setRtcTime( tmElements_t time ){
   if ( rtcMode_ ){
     RTC.write( time );
   }else{
-    startMillis_ = millis();
+    startMillis_ = getEpoch();
     startMillisTime_ = time;
   }
 }
@@ -164,8 +187,7 @@ bool Clock::isLeapYear( int year ){
 
 tmElements_t Clock::calcMillisTime(){
   tmElements_t time = startMillisTime_;
-  unsigned long offset = ( millis() - startMillis_ ) / 1000;
-
+  unsigned long offset = getEpoch() - startMillis_;
   time.Second += ( offset % 60  );
   time.Minute += ( offset % 360 )  / 60;
   time.Hour   += ( offset % 8640 ) / 360;

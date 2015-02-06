@@ -3,7 +3,7 @@
 
 #include "Equip.h"
 
-static prog_char DOSER_MAX_DISABLE_NAME[] PROGMEM = "DoserMaxDisableTime";
+static prog_char DOSER_MAX_DISABLE_NAME[] PROGMEM = "DoserMaxDisTime";
 static prog_char DOSER_MAX_DISABLE_DESC[] PROGMEM = "Doser maximum time to be disabled";
 static prog_char DOSER_MAX_DISABLE_UNIT[] PROGMEM = "min";
 
@@ -20,13 +20,13 @@ static prog_char DOSER_CAL_UNIT[] PROGMEM = "ml/min";
 
 class Doser: public Equip{
   public:
-    Doser( Setting*, uint8_t );
-    void check( float );
+    Doser( Setting*, Clock*, uint8_t );
+    void check();
     
   private:
-  float timePerDay();
-  float timePerDose();
-  float timeBetweenDoses();
+    float timePerDay();
+    float timePerDose();
+    float timeBetweenDoses();
   
 };
 

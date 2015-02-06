@@ -2,7 +2,7 @@
 
 // Constructor
 
-Ato::Ato( Setting* settings, uint8_t atoPumpPin, uint8_t atoHiPin, uint8_t atoLoPin ): Equip( settings, atoPumpPin ){
+Ato::Ato( Setting* settings, Clock* clock, uint8_t atoPumpPin, uint8_t atoHiPin, uint8_t atoLoPin ): Equip( settings, clock, atoPumpPin ){
   
   settings->init( &ATO_ALARM_NAME[0]      , &ATO_ALARM_DESC[0]      , &ATO_ALARM_UNIT[0]      , 60 );
   settings->init( &ATO_MIN_ON_NAME[0]     , &ATO_MIN_ON_DESC[0]     , &ATO_MIN_ON_UNIT[0]     , 10 );
@@ -27,19 +27,21 @@ Ato::Ato( Setting* settings, uint8_t atoPumpPin, uint8_t atoHiPin, uint8_t atoLo
 
 // Public full check including reading inputs, setting alarms and turning on/off pump
 
-void Ato::check( float currentTime ){
-
-  if ( getPumpAlarm() && millis() > pumpAlarmTime_ + (unsigned long)settings_->get( &ATO_PUMP_ALARM_NAME[0] ) * 1000 * 60 )
+void Ato::check(){
+  unsigned long currentEpoch = clock_->getEpoch();
+  if ( getPumpAlarm() && currentEpoch > pumpAlarmTime_ + (unsigned long)settings_->get( &ATO_PUMP_ALARM_NAME[0] ) * 60 )
     setPumpAlarm(false);
   
   bool waterLo = quickLoCheck();
   bool waterHi = quickHiCheck();
 
   setHiAlarm( waterHi );
-  setLoAlarm( waterLo && loWaterTime_ && millis() > loWaterTime_ + (unsigned long)settings_->get( &ATO_ALARM_NAME[0] ) * 1000 * 60 );
-  setPumpAlarm( getPumpAlarm() || ( getEquipStatus() && millis() > pumpOnTime_ + (unsigned long)settings_->get( &ATO_MAX_ON_NAME[0] ) * 1000 ) );
+  setLoAlarm( waterLo && loWaterTime_ && currentEpoch > loWaterTime_ + (unsigned long)settings_->get( &ATO_ALARM_NAME[0] ) * 60 );
+  setPumpAlarm( getPumpAlarm() || ( getEquipStatus() && currentEpoch > pumpOnTime_ + (unsigned long)settings_->get( &ATO_MAX_ON_NAME[0] ) ) );
   
-  if ( waterLo && !getHiAlarm() && !getPumpAlarm() && getStatus() )  // Pump alarm should cover Low Alarm issues
+  if ( !getHiAlarm() && forceOn_ )
+    equipOn();
+  else if ( !getHiAlarm() && waterLo && !getPumpAlarm() && getStatus() )  // Pump alarm should cover Low Alarm issues
     equipOn();    
   else
     equipOff();  
@@ -48,17 +50,18 @@ void Ato::check( float currentTime ){
 
 // Public functions for quickly checking current status of the float switches
 bool Ato::quickLoCheck(){
+  unsigned long currentEpoch = clock_->getEpoch();
   bool loFlag = genericCheck( atoLoPin_ );
   
   if ( (bool)settings_->get( &ATO_LO_INV_NAME[0] ) )
     loFlag = !loFlag;
   
   if ( loWaterTime_ == 0  && loFlag == true )
-    loWaterTime_ = millis();
+    loWaterTime_ = clock_->getEpoch();
   if ( loFlag == false )
     loWaterTime_ = 0;
     
-  if ( loFlag == true && millis() < loWaterTime_ + (unsigned long)settings_->get( &ATO_DEBOUNCE_NAME[0] ) * 1000 )
+  if ( loFlag == true && currentEpoch < loWaterTime_ + (unsigned long)settings_->get( &ATO_DEBOUNCE_NAME[0] ) )
     return false;
   else
     return loFlag;
@@ -71,7 +74,7 @@ bool Ato::quickHiCheck(){
     hiFlag = !hiFlag;
   
   if ( hiWaterTime_ == 0  && hiFlag == true )
-    hiWaterTime_ = millis();
+    hiWaterTime_ = clock_->getEpoch();
   if ( hiFlag == false )
     hiWaterTime_ = 0;
     
@@ -105,7 +108,7 @@ void Ato::setHiAlarm( bool flag ){
 
 void Ato::setPumpAlarm( bool flag ){
   if ( flag && !pumpAlarmTime_ )
-    pumpAlarmTime_ = millis();
+    pumpAlarmTime_ = clock_->getEpoch();
   if ( !flag )
     pumpAlarmTime_ = 0;
   pumpAlarm_ = flag;

@@ -28,7 +28,7 @@ void Setting::failedNode( prog_char* name ){
   if ( error_.length() > 0 )
     error_ += "," + String(nameArray);
   else
-    error_ = "Could initialize the following setting(s):" + String(nameArray);  
+    error_ = "Could initialize the following setting(s):" + String(nameArray);
 }
 
 bool Setting::createNode( prog_char* name, prog_char* description, prog_char* unit, float value ){
@@ -44,7 +44,7 @@ bool Setting::createNode( prog_char* name, prog_char* description, prog_char* un
   thisNode->desc  = description;
   thisNode->unit  = unit;
   thisNode->value = value;
-  
+
   if ( firstNode_ )
     thisNode->next = firstNode_;
   else
@@ -55,88 +55,72 @@ bool Setting::createNode( prog_char* name, prog_char* description, prog_char* un
   return true;
 }
 
-/*
-float Setting::get( String variable ){
-  Node* thisNode = findNode( variable );
-  if ( thisNode )
-    return thisNode->value;
-  else
-    return -1;
-}
-*/
-
 float Setting::get( prog_char* name ){
-  char variableArray[MAX_NAME_SIZE];
+  char* variableArray = new char[MAX_NAME_SIZE];
   strcpy_P(variableArray, name);
-  Node* thisNode = findNode( String(variableArray) );
+  Node* thisNode = findNode( variableArray );
+  strcpy_P(variableArray, thisNode->name);
+  delete( variableArray );
   if ( thisNode )
     return thisNode->value;
   else
     return -1;
 }
 
-Node* Setting::findNode( String variable ){
+Node* Setting::findNode( char* variable ){
   Node* searchNode = firstNode_;
-  while ( compare(variable, searchNode->name ) != 0 && searchNode->next )
-    searchNode = searchNode->next;
-  if ( compare(variable, searchNode->name ) == 0 )
+  if ( strcmp_P( variable, searchNode->name ) == 0 )
     return searchNode;
-  else
-    return 0;
+  while(searchNode->next){
+    searchNode = searchNode->next;
+    if ( strcmp_P( variable, searchNode->name ) == 0 )
+      return searchNode;
+  }
+  return 0;
 }
 
-String Setting::getString( String variable ){
+void Setting::getString( char* variable ){
   Node* thisNode = findNode( variable );
   if ( thisNode )
-    return nodeDescription( thisNode );
+    nodeDescription( variable, thisNode );
   else
-    return "Could not find setting " + variable;  
+    strcpy(variable, "Could not find setting ");  
 }
   
-String Setting::nodeDescription( Node* thisNode ){
-  String message;
-  char* description = new char[MAX_SIZE];
-  strcat_P( description, thisNode->desc );
-  strcat  ( description, " (" );
-  strcat_P( description, thisNode->name );
-  strcat  ( description, ") = " );
+void Setting::nodeDescription( char* variable, Node* thisNode ){
+  strcpy_P( variable, thisNode->desc );
+  strcat  ( variable, " (" );
+  strcat_P( variable, thisNode->name );
+  strcat  ( variable, ") = " );
   char value[10];
   dtostrf(thisNode->value,4,1,value);
-  strcat  ( description, value );
+  strcat  ( variable, value );
   if ( thisNode->unit ){
-    strcat  ( description, " " );
-    strcat_P( description, thisNode->unit );
+    strcat  ( variable, " " );
+    strcat_P( variable, thisNode->unit );
   }
-  message = String(description);
-  delete(description);
-  return message;
+  return;
 }
  
-String Setting::set( String variable, float value ){
+void Setting::set( char* variable, float value ){
   Node* thisNode = findNode( variable );
   if ( thisNode )
     thisNode->value = value;
-  return getString( variable );
+  getString( variable );
 }
-  
-bool Setting::compare( String variable, prog_char* progMem ){
-  char variableArray[MAX_NAME_SIZE];
-  variable.toCharArray(variableArray, MAX_NAME_SIZE);
-  return strcmp_P(variableArray, progMem);
-}
-
-String Setting::getNextSetting( String variable ){
+ 
+void Setting::getNextSetting( char* variable ){
   Node* nextNode;
-  char variableArray[MAX_NAME_SIZE];
-  if ( variable.length() == 0 )
+  if ( strlen(variable) == 0 )
     nextNode = firstNode_;
   else
     nextNode = findNode( variable )->next;
     
   if ( nextNode == 0 )
-    return "";
-    
-  strcpy_P(variableArray, nextNode->name);
-  return String(variableArray);
+    *variable = (char) 0;
+  else
+    strcpy_P(variable, nextNode->name);
+
+  return;
     
 }

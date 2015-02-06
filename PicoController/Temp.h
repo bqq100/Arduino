@@ -6,6 +6,10 @@
 
 #define READ_DELAY 750;
 
+static prog_char TEMP_MAX_DISABLE_NAME[] PROGMEM = "MaxTempDisTime";
+static prog_char TEMP_MAX_DISABLE_DESC[] PROGMEM = "Heater maximum time to be disabled";
+static prog_char TEMP_MAX_DISABLE_UNIT[] PROGMEM = "min";
+
 static prog_char HI_TEMP_NAME[] PROGMEM = "HiTemp";
 static prog_char HI_TEMP_DESC[] PROGMEM = "Temp to turn off heater";
 static prog_char HI_TEMP_UNIT[] PROGMEM = "F";
@@ -20,8 +24,8 @@ static prog_char CAL_FAC_UNIT[] PROGMEM = "F";
 
 class Temp: public Equip{
   public :
-    Temp( Setting*, uint8_t, uint8_t );
-    void  check( float );
+    Temp( Setting*, Clock*, uint8_t, uint8_t );
+    void  check();
     float getTemp();
     
   private :

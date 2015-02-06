@@ -5,7 +5,7 @@
 
 class Equip: public Module{
   public:
-    Equip( Setting*, uint8_t );
+    Equip( Setting*, Clock*, uint8_t );
     bool getEquipStatus();
     
   protected:

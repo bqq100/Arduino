@@ -6,19 +6,22 @@
 #include <DS1307RTC.h>
 #include <Arduino.h>
 #include "Setting.h" 
+#include "Utilities.h"
 
 class Clock{
   public:
     Clock( Setting* );
+    void   check();
     float  getTime();
     int    getWeekday();
     String getDateString();
     String getTimeString();
-    void   setTime  ( String );
+    unsigned long getEpoch();
+    void   setTime  ( char* );
     void   setHour  ( String );
     void   setMinute( String );
     void   setSecond( String );
-    void   setDate  ( String );
+    void   setDate  ( char* );
     void   setDay   ( String );
     void   setMonth ( String );
     void   setYear  ( String );
@@ -27,6 +30,8 @@ class Clock{
     bool     rtcMode_;
     tmElements_t startMillisTime_;
     unsigned long startMillis_;
+    unsigned long epoch_;
+    unsigned long prevEpochTick_;
     void   initClk();
     void setRtcTime( tmElements_t );
     tmElements_t getRtcTime();
@@ -35,7 +40,6 @@ class Clock{
     float timeToFloat( tmElements_t );
     bool  isLeapYear( int );
     String formatString( int );
-
 };
 
 #endif

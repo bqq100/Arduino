@@ -11,16 +11,27 @@
 #include "Ato.h"
 #include "Light.h"
 #include "Doser.h"
+#include "Waterchange.h"
 
-#define ATO_PUMP_PIN   13
-#define ATO_HI_PIN     9
-#define ATO_LO_PIN     8
+// 12v Control Pins
+#define ATO_PUMP_PIN   A0
+#define DOSER_PIN      A1
+#define FAN_PIN        A2
+#define DRAIN_PIN      12
+#define FILL_PIN       13 
+
+// 120V Control Pins
 #define RETURN_PIN     11
-#define CH1_DIMMER_PIN 7
+#define HEATER_PIN     10
+
+// PWM Control Pins
+#define CH1_DIMMER_PIN 5
 #define CH2_DIMMER_PIN 6
-#define TEMP_PIN   10
-#define HEATER_PIN 12
-#define DOSER_PIN  5
+
+// Input Pins
+#define ATO_HI_PIN     7
+#define ATO_LO_PIN     8
+#define TEMP_PIN       9
 
 void setup() 
 {
@@ -29,21 +40,25 @@ void setup()
 void loop()
 {
   Setting settings;
-  Clock clock(&settings);
-  Ato    ato        (&settings, ATO_PUMP_PIN  , ATO_HI_PIN    , ATO_LO_PIN);
-  Light  light      (&settings, CH1_DIMMER_PIN, CH2_DIMMER_PIN            );  
-  Temp   temperature(&settings, HEATER_PIN    , TEMP_PIN                  );
-  Doser  doser      (&settings, DOSER_PIN                                 );
-  Return returnPump (&settings, RETURN_PIN                                );
-  Command command   (&settings, &clock, &light, &doser, &ato, &temperature, &returnPump   );
-    
+  Clock       clock       (&settings);
+  Ato         ato         (&settings, &clock, ATO_PUMP_PIN   , ATO_HI_PIN    , ATO_LO_PIN );
+  Waterchange wc          (&settings, &clock, &ato           , DRAIN_PIN      , FILL_PIN  );  
+  Temp        temperature (&settings, &clock, HEATER_PIN     , TEMP_PIN                   );
+  Doser       doser       (&settings, &clock, DOSER_PIN                                   );
+  Light       light       (&settings, &clock, CH1_DIMMER_PIN , CH2_DIMMER_PIN, FAN_PIN    ); 
+  Return      returnPump  (&settings, &clock, RETURN_PIN                                  );
+
+  Command command (&settings, &clock, &ato, &light, &returnPump, &temperature, &doser, &wc);  
+
   while (true){
-    light.check( clock.getTime() );
-    doser.check( clock.getTime() );
-    ato.check  ( clock.getTime() );
-    returnPump.check ( clock.getTime() );
-    temperature.check( clock.getTime() );
-    command.check    ( clock.getTime() );
+    clock.check();
+    doser.check();
+    ato.check  ();
+    wc.check   ();
+    returnPump.check ();
+    temperature.check();
+    light.check();
+    command.check    (); 
     if ( freeRam() < 512 )
       resetFunc(); //call reset
   }

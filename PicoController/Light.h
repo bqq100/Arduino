@@ -1,7 +1,7 @@
 #ifndef Light_h
 #define Light_h
 
-#include "Module.h"
+#include "Equip.h"
 
 static prog_char LIGHT_MAX_DISABLE_NAME[] PROGMEM = "LightMaxDisableTime";
 static prog_char LIGHT_MAX_DISABLE_DESC[] PROGMEM = "Lighting maximum time to be disabled";
@@ -23,17 +23,17 @@ static prog_char LIGHT_PEAK_TIME_UNIT[] PROGMEM = "hours";
 
 static prog_char LIGHT_MAX_CH1_NAME[] PROGMEM = "LightCh1MaxPercent";
 static prog_char LIGHT_MAX_CH1_DESC[] PROGMEM = "Lighting CH1 peak intensity";
-static prog_char LIGHT_MAX_CH1_UNIT[] PROGMEM = "%";
+static prog_char LIGHT_MAX_CH1_UNIT[] PROGMEM = "pct";
 
 static prog_char LIGHT_MAX_CH2_NAME[] PROGMEM = "LightCh2MaxPercent";
 static prog_char LIGHT_MAX_CH2_DESC[] PROGMEM = "Lighting CH2 peak intensity";
-static prog_char LIGHT_MAX_CH2_UNIT[] PROGMEM = "%";
+static prog_char LIGHT_MAX_CH2_UNIT[] PROGMEM = "pct";
 
-class Light: public Module{
+class Light: public Equip{
   public:
-    Light( Setting*, uint8_t, uint8_t );
-    void check( float );
-    float getBrightness();
+    Light( Setting*, Clock*, uint8_t, uint8_t, uint8_t );
+    void check();
+    float getEquipStatus();
     
   private:
     Setting* settings_;

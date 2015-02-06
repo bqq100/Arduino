@@ -12,6 +12,7 @@
 #include "Return.h"
 #include "Clock.h"
 #include "Utilities.h"
+#include "Waterchange.h"
 
 // Message Defines
 #define STARTUP_MSG       F("Controller Starting Up...")
@@ -39,10 +40,11 @@ static prog_char MAX_UPDATE_UNIT[] PROGMEM = "hrs";
 
 class Command{
   public :
-    Command(Setting*, Clock*, Light*, Doser*, Ato*, Temp*, Return*);
-    Command(Setting*, Clock*);
-    void check( float );
+    Command(Setting*, Clock*, Light*, Doser*, Ato*, Temp*, Return*, Waterchange*);
+    Command(Setting*, Clock*, Ato*, Light*, Return*, Temp*, Doser*, Waterchange*);
+    void check();
 
+    void output( char* );
     void output( String );
     void output( const __FlashStringHelper*, int    , bool );
     void output( const __FlashStringHelper*, bool   , bool );
@@ -51,6 +53,7 @@ class Command{
     void output( const __FlashStringHelper*         );
     
   private :
+    Waterchange*    wc_;
     Setting*        settings_;
     Light*          light_;
     Doser*          doser_;
@@ -58,7 +61,7 @@ class Command{
     Temp*           temperature_;
     Return*         returnPump_;
     Clock*          clock_;
-    String          input_;
+    char*           string_;
     unsigned long   nextStatus_;
     unsigned long   autoStatus_;
 
@@ -66,18 +69,20 @@ class Command{
 
     bool isValidChar( int );
 
-    void processCommand( String );
+    void processCommand();
 
-    void getClock  ( String, String );    
-    void getLight  ( String, String );
-    void getDoser  ( String, String );
-    void getAto    ( String, String );
-    void getStatus ( String, String );
-    void getReturn ( String, String );
-    void getMemory ( String, String );
-    void getSetting( String, String );
-    void setSetting( String, String );
-    void getAllSettings( String, String );
+    template <class T> 
+    void getEquipStatus( char*, char*, T, const __FlashStringHelper* );
+
+    void getClock  ( char*, char* );    
+    void getStatus ( char*, char* );
+    void getMemory ( char*, char* );
+    void getSetting( char*, char* );
+    void setSetting( char*, char* );
+    void getAllSettings( char*, char* );
+    
+    bool stringsEqual(char*, const char*);
+    bool stringStartsWith(char*, const char*);
     
 };
  

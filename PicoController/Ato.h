@@ -35,9 +35,9 @@ static prog_char ATO_HI_INV_DESC[] PROGMEM = "ATO Invert Hi Switch [ switch off 
 
 class Ato: public Equip{
   public:
-    Ato( Setting*, uint8_t, uint8_t, uint8_t );
+    Ato( Setting*, Clock*, uint8_t, uint8_t, uint8_t );
 
-    void check( float );
+    void check();
     
     bool quickLoCheck();
     bool quickHiCheck();

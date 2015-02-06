@@ -1,6 +1,6 @@
 #include "Equip.h"
 
-Equip::Equip( Setting* settings, uint8_t equipPin ): Module( settings ){
+Equip::Equip( Setting* settings, Clock* clock, uint8_t equipPin ): Module( settings, clock ){
   equipPin_ = equipPin;
   if ( equipPin_ )
     pinMode( equipPin_, OUTPUT );
@@ -34,6 +34,4 @@ void Equip::equipInit(){
   if ( equipPin_ )  
     digitalWrite( equipPin_, HIGH );
 }
-
-
 
