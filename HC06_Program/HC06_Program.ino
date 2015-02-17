@@ -28,30 +28,45 @@
 
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(10, 11); // RX, TX
+SoftwareSerial mySerial(11, 10); // RX, TX
+
+char prev;
+char c;
 
 void setup() {
 
-Serial.begin(9600);
+  Serial.begin(9600);
 
-pinMode(9,OUTPUT); digitalWrite(9,HIGH);
+  pinMode(2,OUTPUT); 
+  digitalWrite(2,LOW);
 
-Serial.println("Enter AT commands:");
+  Serial.println("Enter AT commands:");
 
-mySerial.begin(9600);
+  mySerial.begin(9600); 
 
 }
 
 void loop()
-
 {
 
-if (mySerial.available())
+  if ( Serial.available() )
+  {
+    prev = c;
+    c = Serial.read();
+    mySerial.write(c);
+  }
 
-Serial.write(mySerial.read());
+  if ( mySerial.available() )
+    Serial.write(mySerial.read());
 
-if (Serial.available())
-
-mySerial.write(Serial.read());
+  if( prev == '0' && c == ' ' )
+  {
+    prev = (char) 0;
+    c = (char) 0;
+    Serial.write(0x14);  // reply two char to avrdude.exe
+    Serial.write(0x10);  //  for synchronization 
+    delay(100);
+    digitalWrite(2,HIGH);  // turn on the relay to ground the reset pin
+  }
 
 }

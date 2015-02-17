@@ -26,7 +26,7 @@ void Command::check(){
   unsigned long currentEpoch = clock_->getEpoch();
   if ( settings_->getError().length() > 0 )
     output( settings_->getError() );
-  if ( autoStatus_ && nextStatus_ && currentEpoch > nextStatus_ )
+  if ( autoStatus_ && nextStatus_ && currentEpoch >= nextStatus_ )
     getStatus("status","");
   if ( autoStatus_ && currentEpoch > autoStatus_ )
     autoStatus_ = 0;
@@ -47,6 +47,11 @@ void Command::readChar(){
       int ascii = (int)c;
       if ( isValidChar(ascii) )
         strncat(string_, &c, 1);
+	  if ( *string_ == '0' && c == ' ' && strlen(string_) == 1 ){
+        Serial.write(0x14);  // reply two char to avrdude.exe
+        Serial.write(0x10);  //  for synchronization 
+        resetFunc(); 
+      }
     }
 } 
 
@@ -174,10 +179,18 @@ void Command::getAllSettings( char* command, char* option ){
 }
 
 void Command::setSetting( char* command, char* option ){
+
   char* setting = command;
   if ( stringStartsWith(command, "set") )
     setting += 3;
-  settings_->set( setting, atof(option) );
+
+  if ( option && *(option - 1) == ':' ){
+    float value = atof(option);
+    *(option - 1) = (char) 0;
+    settings_->set( setting, value );
+  }else{
+    settings_->getString( setting );
+  }
   output(setting);
   return;
 }

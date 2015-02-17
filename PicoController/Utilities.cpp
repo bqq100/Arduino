@@ -1,6 +1,16 @@
 #include <Arduino.h>
 
-void(* resetFunc) (void) = 0;//declare reset function at address 0
+#define RESET_PIN          2
+
+void initResetPin(){
+  pinMode(RESET_PIN,OUTPUT); 
+  digitalWrite(RESET_PIN,LOW);
+}
+
+void resetFunc(){
+  delay(100);
+  digitalWrite(RESET_PIN,HIGH);
+}
 
 String boolToString(bool input){
   if(input)

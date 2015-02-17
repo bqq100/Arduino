@@ -17,3 +17,21 @@ unointosc.build.core=arduino:arduino
 unointosc.build.variant=arduino:standard
 
 ##############################################################
+
+uno9600.name=Arduino Uno 9600 baud Upload (8 MHz internal clock)
+uno9600.upload.protocol=arduino
+uno9600.upload.maximum_size=32256
+uno9600.upload.speed=9600
+uno9600.bootloader.low_fuses=0xe2
+uno9600.bootloader.high_fuses=0xde
+uno9600.bootloader.extended_fuses=0x05
+uno9600.bootloader.path=optiboot
+uno9600.bootloader.file=optiboot_atmega328.hex
+uno9600.bootloader.unlock_bits=0x2F
+uno9600.bootloader.lock_bits=0x0F
+uno9600.build.mcu=atmega328p
+uno9600.build.f_cpu=8000000L
+uno9600.build.core=arduino:arduino
+uno9600.build.variant=arduino:standard
+
+##############################################################

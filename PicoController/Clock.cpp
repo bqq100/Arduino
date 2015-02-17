@@ -188,9 +188,10 @@ bool Clock::isLeapYear( int year ){
 tmElements_t Clock::calcMillisTime(){
   tmElements_t time = startMillisTime_;
   unsigned long offset = getEpoch() - startMillis_;
-  time.Second += ( offset % 60  );
-  time.Minute += ( offset % 360 )  / 60;
-  time.Hour   += ( offset % 8640 ) / 360;
+
+  time.Second += ( offset % 60    );
+  time.Minute += ( offset % 3600  )  / 60;
+  time.Hour   += ( offset % 86400 )  / 3600;
 
   if ( time.Second >= 60 ){
     time.Second = time.Second - 60;
@@ -201,35 +202,47 @@ tmElements_t Clock::calcMillisTime(){
     time.Minute = time.Minute - 60;
     time.Hour++;
   }
-  
-  if ( time.Hour >= 24 ){
-    time.Day  = time.Day + time.Hour / 24;
-    time.Hour = time.Hour % 24;
-  }
 
-  if ( time.Month == 2 && time.Day > 29 && isLeapYear( time.Year + 1970 ) ){
-    time.Day = time.Day - 29;
-    time.Month++;
-  } 
+  if ( time.Hour >= 24 || offset / 86400 > 0 ){
+    
+    time.Day++;
+    
+    if (time.Hour >= 24)
+      time.Hour = time.Hour - 24;
 
-  if ( time.Month == 2 && time.Day > 28 && !isLeapYear( time.Year + 1970) ){
-    time.Day = time.Day - 28;
-    time.Month++;
-  }
+    if ( time.Month == 2 && time.Day > 29 && isLeapYear( time.Year + 1970 ) ){
+      time.Day = time.Day - 29;
+      time.Month++;
+    } 
 
-  if ( time.Day > 31 && ( time.Month == 1 || time.Month == 3 || time.Month == 5 || time.Month == 7 || time.Month == 8 || time.Month == 10 || time.Month == 12 ) ){ 
-    time.Day = time.Day - 31;
-    time.Month++; 
-  }
+    if ( time.Month == 2 && time.Day > 28 && !isLeapYear( time.Year + 1970) ){
+      time.Day = time.Day - 28;
+      time.Month++;
+    }
 
-  if ( time.Day > 30 && ( time.Month == 4 || time.Month == 6 || time.Month == 9 || time.Month == 11 ) ){
-    time.Day = time.Day - 30;
-    time.Month++;
-  }
+    if ( time.Day > 31 && ( time.Month == 1 || time.Month == 3 || time.Month == 5 || time.Month == 7 || time.Month == 8 || time.Month == 10 || time.Month == 12 ) ){ 
+      time.Day = time.Day - 31;
+      time.Month++; 
+    }
 
-  if ( time.Month > 12 ){
-    time.Month = time.Month - 12;
-    time.Year++;
+    if ( time.Day > 30 && ( time.Month == 4 || time.Month == 6 || time.Month == 9 || time.Month == 11 ) ){
+      time.Day = time.Day - 30;
+      time.Month++;
+    }
+
+    if ( time.Month > 12 ){
+      time.Month = time.Month - 12;
+      time.Year++;
+    }
+    
+    startMillisTime_.Day = time.Day;
+    startMillisTime_.Month = time.Month;
+    startMillisTime_.Year = time.Year;
+    startMillisTime_.Hour = time.Hour;
+    startMillisTime_.Minute = time.Minute;
+    startMillisTime_.Second = time.Second;        
+    startMillis_ = getEpoch();
+    
   }
 
   return time;

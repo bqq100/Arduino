@@ -13,25 +13,28 @@
 #include "Doser.h"
 #include "Waterchange.h"
 
+//      DESCRIPTION       Ard Pin       Header Pins
 // 12v Control Pins
-#define ATO_PUMP_PIN   A0
-#define DOSER_PIN      A1
-#define FAN_PIN        A2
-#define DRAIN_PIN      12
-#define FILL_PIN       13 
+#define FAN_PIN           A0            //  8 (+),  7 (-)
+#define ATO_PUMP_PIN       3            // 15 (+), 14 (-)
+#define DOSER_PIN          4            // 13 (+), 12 (-)
+#define DRAIN_PIN         13            //  6 (+),  4 (-)
+#define FILL_PIN          12            //  5 (+),  4 (-)
 
 // 120V Control Pins
-#define RETURN_PIN     11
-#define HEATER_PIN     10
+#define RETURN_PIN        11            // IN2
+#define HEATER_PIN        10            // IN1
 
 // PWM Control Pins
-#define CH1_DIMMER_PIN 5
-#define CH2_DIMMER_PIN 6
+#define CH1_DIMMER_PIN     5
+#define CH2_DIMMER_PIN     6
 
 // Input Pins
-#define ATO_HI_PIN     7
-#define ATO_LO_PIN     8
-#define TEMP_PIN       9
+#define ATO_HI_PIN         7            // 11 (+),  9 (-)
+#define ATO_LO_PIN         8            // 10 (+),  9 (-)
+#define TEMP_PIN           9            //  2 (S),  3 (+),  1 (-)
+
+
 
 void setup() 
 {
@@ -39,6 +42,7 @@ void setup()
 
 void loop()
 {
+  initResetPin();
   Setting settings;
   Clock       clock       (&settings);
   Ato         ato         (&settings, &clock, ATO_PUMP_PIN   , ATO_HI_PIN    , ATO_LO_PIN );
@@ -59,7 +63,7 @@ void loop()
     temperature.check();
     light.check();
     command.check    (); 
-    if ( freeRam() < 512 )
+    if ( freeRam() < 384 )
       resetFunc(); //call reset
   }
 }

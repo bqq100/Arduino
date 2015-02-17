@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/cygdrive/c/Strawberry/perl/bin/perl
 
 use strict;
 use warnings;

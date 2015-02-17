@@ -13,9 +13,13 @@ Light::Light( Setting* settings, Clock* clock, uint8_t dimmerPin1, uint8_t dimme
 
   dimmerPin1_ = dimmerPin1;
   dimmerPin2_ = dimmerPin2;
-//  settings_ = settings; // Had some problems with Parent class not setting the setting_ property
 
   maxDisableName_ = &LIGHT_MAX_DISABLE_NAME[0];
+
+  settings_ = settings;
+  clock_ = clock;
+  disableUntil_ = 0;
+  forceOn_ = false;
 }
 
 void Light::check(){

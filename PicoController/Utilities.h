@@ -1,7 +1,8 @@
 #ifndef Utilities_h
 #define Utilities_h
 
-extern void(* resetFunc) (void);//declare reset function at address 0
+void initResetPin();
+void resetFunc();
 String boolToString( bool );
 int freeRam();
 

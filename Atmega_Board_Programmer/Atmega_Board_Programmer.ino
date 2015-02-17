@@ -141,6 +141,7 @@ const unsigned long kb = 1024;
 // For simplicity later one, we always include these two
 #include "bootloader_lilypad328.h"
 #include "bootloader_atmega328.h"
+#include "bootloader_atmega328_19200.h"
 
 #if USE_ATMEGA168
   #include "bootloader_atmega168.h"
@@ -201,9 +202,9 @@ signatureType signatures [] =
         0x2F },       // lock bits: SPM is not allowed to write to the Boot Loader section.
 
   { { 0x1E, 0x95, 0x0F }, "ATmega328P",  32 * kb,       512,
-        atmega328_optiboot,   // loader image
+        atmega328_optiboot_19200_hex,   // loader image
         0x7E00,               // start address
-        sizeof atmega328_optiboot,
+        sizeof atmega328_optiboot_19200_hex,
         128,          // page size in bytes (for committing)
         0xFF,         // fuse low byte: external clock, max start-up time
         0xDE,         // fuse high byte: SPI enable, boot into bootloader, 512 byte bootloader
@@ -211,9 +212,9 @@ signatureType signatures [] =
         0x2F },       // lock bits: SPM is not allowed to write to the Boot Loader section.
 
   { { 0x1E, 0x95, 0x14 }, "ATmega328",  32 * kb,       512,
-        atmega328_optiboot,   // loader image
+        atmega328_optiboot_19200_hex,   // loader image
         0x7E00,               // start address
-        sizeof atmega328_optiboot,
+        sizeof atmega328_optiboot_19200_hex,
         128,          // page size in bytes (for committing)
         0xFF,         // fuse low byte: external clock, max start-up time
         0xDE,         // fuse high byte: SPI enable, boot into bootloader, 512 byte bootloader
@@ -519,11 +520,11 @@ void writeBootloader ()
       (signatures [foundSig].sig [2] == 0x0F || signatures [foundSig].sig [2] == 0x14)
       )
     {
-    Serial.println (F("Type 'L' to use Lilypad (8 MHz) loader, 'U' for Uno (16 MHz) loader, 'I' for Uno (8MHz) loader ..."));
+    Serial.println (F("Type 'L' to use Lilypad (8 MHz) loader, 'U' for Uno (16 MHz) loader, 'I' for Uno (8MHz) loader ..., 'B' for UNO (8MHz/9600) loader ..."));
     do
       {
       subcommand = toupper (Serial.read ());
-      } while (subcommand != 'L' && subcommand != 'U' && subcommand != 'I');
+      } while (subcommand != 'L' && subcommand != 'U' && subcommand != 'I' && subcommand != 'B');
 
     if (subcommand == 'L')  // use internal 8 MHz clock
       {
