@@ -43,6 +43,8 @@ void Ato::check(){
     equipOn();
   else if ( !getHiAlarm() && waterLo && !getPumpAlarm() && getStatus() )  // Pump alarm should cover Low Alarm issues
     equipOn();    
+  else if ( !getHiAlarm() && getStatus() && getEquipStatus() && currentEpoch < pumpOnTime_ + (unsigned long)settings_->get( &ATO_MIN_ON_NAME[0] ) )
+    equipOn();
   else
     equipOff();  
   
