@@ -19,18 +19,18 @@ Temp::Temp( Setting* settings, Clock* clock, uint8_t heaterPin, uint8_t tempPin 
 void Temp::check(){
   if ( forceOn_ )
     equipOn();
+  else if ( !getStatus() )
+    equipOff();
   else{
     if ( !hasSensor_ )
       hasSensor_ = findSensor();
     if ( !sensorReady_ )
       startConversion();
-    else{
-      if ( readSensor() ){
-        if ( getTemp() > settings_->get( &HI_TEMP_NAME[0] ) )
-          equipOff();
-        if ( getTemp() < settings_->get( &LO_TEMP_NAME[0] ) )
-          equipOn();
-      }
+    else if ( readSensor() ){ 
+      if ( getTemp() > settings_->get( &HI_TEMP_NAME[0] ) )
+        equipOff();
+      if ( getTemp() < settings_->get( &LO_TEMP_NAME[0] ) )
+        equipOn();
     }
   }
 }

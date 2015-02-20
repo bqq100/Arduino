@@ -124,6 +124,8 @@ void Command::processCommand(){
     getEquipStatus( command, option, returnPump_, RETURN_STATUS_MSG );
   if ( stringsEqual(command, "doser") )
     getEquipStatus( command, option, doser_, DOSER_STATUS_MSG );
+  if ( stringsEqual(command, "heater") )
+    getEquipStatus( command, option, temperature_, HEAT_STATUS_MSG );
     
 }
 
