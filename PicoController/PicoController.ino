@@ -59,8 +59,8 @@ void loop()
     doser.check();
     ato.check  ();
     wc.check   ();
-    returnPump.check ();
-    temperature.check();
+    returnPump.check ( ato.getLoAlarm() );
+    temperature.check( ato.getLoAlarm() );
     light.check();
     command.check    (); 
     if ( freeRam() < 384 )

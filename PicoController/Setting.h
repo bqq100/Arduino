@@ -4,6 +4,7 @@
 #include <avr/pgmspace.h>
 #include <Arduino.h>
 #include <stdlib.h>
+#include <EEPROM.h>
 #include "Utilities.h"
 
 const static int MAX_NAME_SIZE = 35;

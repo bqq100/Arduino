@@ -11,6 +11,7 @@ class Return: public Equip{
   public:
     Return( Setting*, Clock*, uint8_t );
     void check();
+    void check( bool );
     
   private:
 };

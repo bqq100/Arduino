@@ -202,9 +202,9 @@ signatureType signatures [] =
         0x2F },       // lock bits: SPM is not allowed to write to the Boot Loader section.
 
   { { 0x1E, 0x95, 0x0F }, "ATmega328P",  32 * kb,       512,
-        atmega328_optiboot_19200_hex,   // loader image
+        atmega328_optiboot,   // loader image
         0x7E00,               // start address
-        sizeof atmega328_optiboot_19200_hex,
+        sizeof atmega328_optiboot,
         128,          // page size in bytes (for committing)
         0xFF,         // fuse low byte: external clock, max start-up time
         0xDE,         // fuse high byte: SPI enable, boot into bootloader, 512 byte bootloader
@@ -212,15 +212,25 @@ signatureType signatures [] =
         0x2F },       // lock bits: SPM is not allowed to write to the Boot Loader section.
 
   { { 0x1E, 0x95, 0x14 }, "ATmega328",  32 * kb,       512,
-        atmega328_optiboot_19200_hex,   // loader image
+        atmega328_optiboot,   // loader image
         0x7E00,               // start address
-        sizeof atmega328_optiboot_19200_hex,
+        sizeof atmega328_optiboot,
         128,          // page size in bytes (for committing)
         0xFF,         // fuse low byte: external clock, max start-up time
         0xDE,         // fuse high byte: SPI enable, boot into bootloader, 512 byte bootloader
         0x05,         // fuse extended byte: brown-out detection at 2.7V
         0x2F },       // lock bits: SPM is not allowed to write to the Boot Loader section.
-
+/*
+  { { 0xFF, 0x95, 0x14 }, "ATmega328-PU",  32 * kb,       512,
+        atmega328_optiboot,   // loader image
+        0x7E00,               // start address
+        sizeof atmega328_optiboot,
+        128,          // page size in bytes (for committing)
+        0xFF,         // fuse low byte: external clock, max start-up time
+        0xDE,         // fuse high byte: SPI enable, boot into bootloader, 512 byte bootloader
+        0x07,         // fuse extended byte: No brown-out detection
+        0x2F },       // lock bits: SPM is not allowed to write to the Boot Loader section.
+*/
   // Atmega644 family
   { { 0x1E, 0x94, 0x0A }, "ATmega164P",   16 * kb,      256 },
   { { 0x1E, 0x95, 0x08 }, "ATmega324P",   32 * kb,      512 },
@@ -535,6 +545,13 @@ void writeBootloader ()
       addr = 0x7800;
       len = sizeof ATmegaBOOT_168_atmega328_pro_8MHz_hex;
       }  // end of using the 8 MHz clock
+    else if (subcommand == 'B') // internal 8MHz clock and 9600 Baud
+      {
+      Serial.println (F("Using Uno Optiboot 16MHz/19200Bd loader @ 8MHz/9600Bd using internal oscillator."));
+      bootloader = atmega328_optiboot_19200_hex;
+      newlFuse = 0xE2;  // internal 8 MHz oscillator
+      len = sizeof atmega328_optiboot_19200_hex;
+      }
     else
       {
         if (subcommand == 'I')

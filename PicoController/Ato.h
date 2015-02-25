@@ -47,7 +47,6 @@ class Ato: public Equip{
     bool getPumpAlarm();
         
   private:
-    unsigned long pumpOnTime_;
     unsigned long pumpAlarmTime_;
     unsigned long loWaterTime_;
     unsigned long hiWaterTime_;

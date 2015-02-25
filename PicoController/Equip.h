@@ -9,6 +9,7 @@ class Equip: public Module{
     bool getEquipStatus();
     
   protected:
+    unsigned long equipOnTime_;
     bool equipStatus_;
     int  equipPin_;
 

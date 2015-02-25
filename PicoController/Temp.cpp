@@ -16,6 +16,13 @@ Temp::Temp( Setting* settings, Clock* clock, uint8_t heaterPin, uint8_t tempPin 
 
 // Public full check function including turning on/off heater
 
+void Temp::check( bool lowWaterAlarm ){
+  if ( lowWaterAlarm )
+    equipOff();
+  else
+    check();
+}
+
 void Temp::check(){
   if ( forceOn_ )
     equipOn();

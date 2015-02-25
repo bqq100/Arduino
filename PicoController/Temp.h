@@ -25,7 +25,8 @@ static prog_char CAL_FAC_UNIT[] PROGMEM = "F";
 class Temp: public Equip{
   public :
     Temp( Setting*, Clock*, uint8_t, uint8_t );
-    void  check();
+    void check();
+    void check( bool );
     float getTemp();
     
   private :

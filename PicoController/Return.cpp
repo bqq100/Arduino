@@ -13,3 +13,10 @@ void Return::check(){
   else
     equipOff();
 }
+
+void Return::check( bool lowWaterAlarm ){
+  if( lowWaterAlarm )
+    equipOff();
+  else
+    check();
+}

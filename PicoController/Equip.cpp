@@ -16,6 +16,7 @@ bool Equip::getEquipStatus(){
 void Equip::equipOn(){
   if ( !getEquipStatus() ){
     equipStatus_ = true;
+    equipOnTime_ = clock_->getEpoch();
     if ( equipPin_ )
       digitalWrite( equipPin_, HIGH );
   }
@@ -24,6 +25,7 @@ void Equip::equipOn(){
 void Equip::equipOff(){
   if ( getEquipStatus() ){
     equipStatus_ = false;
+    equipOnTime_ = 0;
     if ( equipPin_ )
       digitalWrite( equipPin_, LOW );
   }
@@ -31,6 +33,7 @@ void Equip::equipOff(){
 
 void Equip::equipInit(){
   equipStatus_ = true;
+  equipOnTime_ = 0;
   if ( equipPin_ )  
     digitalWrite( equipPin_, HIGH );
 }
