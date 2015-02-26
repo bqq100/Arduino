@@ -25,7 +25,6 @@ void Equip::equipOn(){
 void Equip::equipOff(){
   if ( getEquipStatus() ){
     equipStatus_ = false;
-    equipOnTime_ = 0;
     if ( equipPin_ )
       digitalWrite( equipPin_, LOW );
   }

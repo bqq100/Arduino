@@ -10,7 +10,7 @@ Temp::Temp( Setting* settings, Clock* clock, uint8_t heaterPin, uint8_t tempPin 
   tempPin_     = tempPin;
   hasSensor_   = findSensor();
   sensorReady_ = 0;
-  
+  temperature_ = -1; 
   maxDisableName_ = &TEMP_MAX_DISABLE_NAME[0];
 }
 
@@ -63,6 +63,9 @@ bool Temp::readSensor(){
     sensorReady_ = 0;
     return true;
   }
+  sensorReady_ = 0;
+  hasSensor_ = 0;
+  temperature_ = -1;
   return false;
 }
 
