@@ -11,20 +11,25 @@ Doser::Doser( Setting* settings, Clock* clock, uint8_t doserPin ): Equip( settin
 }
 
 void Doser::check(){
-  for ( int i = 1; i <= settings_->get( &DOSER_NUM_PER_DAY_NAME[0] ); i++ ){
-    float startTime = i * timeBetweenDoses();
-    float endTime   = startTime + timePerDose();
-    if ( forceOn_ )
-      equipOn();
-    else if ( clock_->getTime() > startTime && clock_->getTime() < endTime && getStatus() )
-      equipOn();
-    else
-      equipOff();
-  } 
+
+  float currentTime = clock_->getTime();
+
+  int interval = currentTime / timeBetweenDoses(); 
+
+  float startTime = interval * timeBetweenDoses();
+  float endTime   = startTime + timePerDose();
+
+  if ( forceOn_ )
+    equipOn();
+  else if ( currentTime >= startTime && currentTime <= endTime && getStatus() )
+    equipOn();
+  else
+    equipOff();
+
 }
 
 float Doser::timePerDay(){
-  return settings_->get( &DOSER_AMOUNT_NAME[0] ) / settings_->get( &DOSER_CAL_NAME[0] );
+  return settings_->get( &DOSER_AMOUNT_NAME[0] ) / settings_->get( &DOSER_CAL_NAME[0] ) / 60.0;
 }
 
 float Doser::timePerDose(){
@@ -32,5 +37,5 @@ float Doser::timePerDose(){
 }
 
 float Doser::timeBetweenDoses(){
-  return 24 * 60 / settings_->get( &DOSER_NUM_PER_DAY_NAME[0] );
+  return 24.0 / settings_->get( &DOSER_NUM_PER_DAY_NAME[0] );
 }
