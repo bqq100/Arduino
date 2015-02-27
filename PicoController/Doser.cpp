@@ -21,7 +21,7 @@ void Doser::check(){
 
   if ( forceOn_ )
     equipOn();
-  else if ( currentTime >= startTime && currentTime <= endTime && getStatus() )
+  else if ( currentTime >= startTime && currentTime < endTime && startTime != endTime && getStatus() )
     equipOn();
   else
     equipOff();

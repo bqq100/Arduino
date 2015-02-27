@@ -26,7 +26,7 @@ void Light::check(){
   float percent = 0;
   float currentTime = clock_->getTime();
 
-  if ( currentTime > getStartPeakTime() && currentTime < getEndPeakTime() )
+  if ( currentTime >= getStartPeakTime() && currentTime <= getEndPeakTime() )
     percent = 1;
   if ( currentTime > getStartTime() && currentTime < getStartPeakTime() )
     percent = calcRampPercent( currentTime, getStartTime(), getStartPeakTime() );
