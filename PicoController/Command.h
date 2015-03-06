@@ -71,6 +71,9 @@ class Command{
 
     void processCommand();
 
+    template <class T>
+    void getLightStatus( char*, char*, T, const __FlashStringHelper* );
+
     template <class T> 
     void getEquipStatus( char*, char*, T, const __FlashStringHelper* );
 

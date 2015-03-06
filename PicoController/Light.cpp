@@ -8,8 +8,8 @@ Light::Light( Setting* settings, Clock* clock, uint8_t dimmerPin1, uint8_t dimme
   settings->init( &LIGHT_MAX_DISABLE_NAME[0], &LIGHT_MAX_DISABLE_DESC[0], &LIGHT_MAX_DISABLE_UNIT[0], 4320  );
   settings->init( &LIGHT_RAMP_TIME_NAME[0]  , &LIGHT_RAMP_TIME_DESC[0]  , &LIGHT_RAMP_TIME_UNIT[0]  , 180   );
   settings->init( &LIGHT_PEAK_TIME_NAME[0]  , &LIGHT_PEAK_TIME_DESC[0]  , &LIGHT_PEAK_TIME_UNIT[0]  , 4     );
-  settings->init( &LIGHT_MAX_CH1_NAME[0]    , &LIGHT_MAX_CH1_DESC[0]    , &LIGHT_MAX_CH1_UNIT[0]    , 100   );
-  settings->init( &LIGHT_MAX_CH2_NAME[0]    , &LIGHT_MAX_CH2_DESC[0]    , &LIGHT_MAX_CH2_UNIT[0]    , 100   );
+  settings->init( &LIGHT_MAX_CH1_NAME[0]    , &LIGHT_MAX_CH1_DESC[0]    , &LIGHT_MAX_CH1_UNIT[0]    , 50    );
+  settings->init( &LIGHT_MAX_CH2_NAME[0]    , &LIGHT_MAX_CH2_DESC[0]    , &LIGHT_MAX_CH2_UNIT[0]    , 30    );
 
   dimmerPin1_ = dimmerPin1;
   dimmerPin2_ = dimmerPin2;
@@ -20,6 +20,14 @@ Light::Light( Setting* settings, Clock* clock, uint8_t dimmerPin1, uint8_t dimme
   clock_ = clock;
   disableUntil_ = 0;
   forceOn_ = false;
+}
+
+void Light::lightOn( char* brightness ){
+  forceOnBrightness_ = atof(brightness) / 100.0;
+  if ( forceOnBrightness_ > 1.0 || forceOnBrightness_ <= 0 )
+    forceOnBrightness_ = 1.0;
+  forceOn();
+  return;
 }
 
 void Light::check(){
@@ -34,7 +42,7 @@ void Light::check(){
     percent = calcRampPercent( currentTime, getEndTime(), getEndPeakTime() );
 
   if ( forceOn_ )
-    setLights( 1.0 );
+    setLights( forceOnBrightness_ );
   else if ( getStatus() )
     setLights( percent );
   else

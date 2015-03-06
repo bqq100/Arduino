@@ -32,6 +32,7 @@ static prog_char LIGHT_MAX_CH2_UNIT[] PROGMEM = "pct";
 class Light: public Equip{
   public:
     Light( Setting*, Clock*, uint8_t, uint8_t, uint8_t );
+    void lightOn( char* );
     void check();
     float getEquipStatus();
     
@@ -40,7 +41,7 @@ class Light: public Equip{
     uint8_t  dimmerPin1_;
     uint8_t  dimmerPin2_;
     float    brightness_;
-    
+    float    forceOnBrightness_; 
     void  setLights( float );
     void  setDimmer( uint8_t, float );
     float calcRampPercent( float, float, float );

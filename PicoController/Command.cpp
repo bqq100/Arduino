@@ -38,10 +38,10 @@ void Command::check(){
 void Command::readChar(){
     char c = Serial.read();
     if ( c == '\n' || c == '\r' ){
-      if ( strlen(string_) > 0 ){
-        processCommand();
-        *string_ = (char) 0;
-      }
+      if ( strlen(string_) == 0 )
+        strcpy( string_, "status" );
+      processCommand();
+      *string_ = (char) 0;
     }
     else{
       int ascii = (int)c;
@@ -51,6 +51,8 @@ void Command::readChar(){
         Serial.write(0x14);  // reply two char to avrdude.exe
         Serial.write(0x10);  //  for synchronization 
         resetFunc(); 
+      }else if ( ( ascii == 127 || ascii == 8 ) && strlen(string_) > 0 ){
+        *(string_ + strlen(string_) - 1) = 0;
       }
     }
 } 
@@ -71,7 +73,7 @@ bool Command::isValidChar( int ascii ){
 
 bool Command::stringsEqual(char* string1, const char* string2){
   bool match = true;
-  int i;
+  unsigned int i;
   for (i = 0; i < strlen(string1) && *(string1 + i) != ':'; i++){
     if ( *(string1 + i) != *(string2+i) )
       match = false;
@@ -84,7 +86,7 @@ bool Command::stringsEqual(char* string1, const char* string2){
 
 bool Command::stringStartsWith(char* string1, const char* string2){
   bool match = true;
-  for (int i = 0; i < strlen(string2); i++){
+  for (unsigned int i = 0; i < strlen(string2); i++){
     if( *(string1 + i) != *(string2+i) )
       match = false;
   }
@@ -117,7 +119,7 @@ void Command::processCommand(){
   if ( stringsEqual(command, "clock") )  // 2kB
     getClock( command, option );
   if ( stringsEqual(command, "light") )
-    getEquipStatus( command, option, light_, LIGHT_STATUS_MSG );
+    getLightStatus( command, option, light_, LIGHT_STATUS_MSG );
   if ( stringsEqual(command, "ato") )
     getEquipStatus( command, option, ato_, ATO_STATUS_MSG );
   if ( stringsEqual(command, "return") )
@@ -127,6 +129,20 @@ void Command::processCommand(){
   if ( stringsEqual(command, "heater") )
     getEquipStatus( command, option, temperature_, HEAT_STATUS_MSG );
     
+}
+
+template <class T>
+void Command::getLightStatus( char* command, char* option, T equip, const __FlashStringHelper* message ){
+  if ( stringsEqual(option, "auto") )
+    equip->enable();
+  if ( stringsEqual(option, "off") )
+    equip->disable();
+  if ( stringsEqual(option, "on") )
+    equip->forceOn();
+  else if ( strlen(option) > 0 )
+    equip->lightOn( option );
+  equip->check();
+  output( message, equip->getEquipStatus(), equip->getStatus() );
 }
 
 template <class T> 
