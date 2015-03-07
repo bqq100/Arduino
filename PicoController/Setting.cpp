@@ -1,6 +1,7 @@
 #include "Setting.h"
 
 Setting::Setting(){
+  newFirmware_ = isNewFirmware();
   firstNode_ = 0;
   error_ = "";
 }
@@ -43,15 +44,39 @@ bool Setting::createNode( prog_char* name, prog_char* description, prog_char* un
   thisNode->name  = name;
   thisNode->desc  = description;
   thisNode->unit  = unit;
-  thisNode->value = value;
 
-  if ( firstNode_ )
+  if ( firstNode_ ){
     thisNode->next = firstNode_;
-  else
+    thisNode->eepromAddress = firstNode_->eepromAddress + sizeof(value);
+  }else{
     thisNode->next = 0;
+    thisNode->eepromAddress = sizeof(__DATE__)+sizeof(__TIME__);  //first bytes used to store last flash date/time
+  }
+
+  if ( newFirmware_ )
+    setNodeValue( thisNode, value ); 
     
   firstNode_ = thisNode;
   
+  return true;
+}
+
+bool Setting::isNewFirmware(){
+  char currentFirmwareDate[] = __DATE__;
+  char currentFirmwareTime[] = __TIME__;
+
+  char storedFirmwareDate[] = __DATE__;
+  char storedFirmwareTime[] = __TIME__; 
+
+  eeprom_read_block((void*)&storedFirmwareDate, (void*)0, sizeof(storedFirmwareDate));
+  eeprom_read_block((void*)&storedFirmwareTime, (void*)sizeof(storedFirmwareDate), sizeof(storedFirmwareTime));
+
+  if ( strcmp( currentFirmwareDate, storedFirmwareDate ) == 0 && strcmp( currentFirmwareTime, storedFirmwareTime ) == 0 )
+    return false;
+
+  eeprom_write_block((const void*)&currentFirmwareDate, (void*)0, sizeof(currentFirmwareDate));
+  eeprom_write_block((const void*)&currentFirmwareTime, (void*)sizeof(currentFirmwareDate), sizeof(currentFirmwareTime)); 
+
   return true;
 }
 
@@ -62,7 +87,7 @@ float Setting::get( prog_char* name ){
   strcpy_P(variableArray, thisNode->name);
   delete( variableArray );
   if ( thisNode )
-    return thisNode->value;
+    return getNodeValue( thisNode );
   else
     return -1;
 }
@@ -93,7 +118,7 @@ void Setting::nodeDescription( char* variable, Node* thisNode ){
   strcat_P( variable, thisNode->name );
   strcat  ( variable, ") = " );
   char value[10];
-  dtostrf(thisNode->value,4,1,value);
+  dtostrf( getNodeValue(thisNode),4,1,value);
   strcat  ( variable, value );
   if ( thisNode->unit ){
     strcat  ( variable, " " );
@@ -105,7 +130,7 @@ void Setting::nodeDescription( char* variable, Node* thisNode ){
 void Setting::set( char* variable, float value ){
   Node* thisNode = findNode( variable );
   if ( thisNode )
-    thisNode->value = value;
+    setNodeValue( thisNode, value );
   getString( variable );
 }
  
@@ -123,4 +148,14 @@ void Setting::getNextSetting( char* variable ){
 
   return;
     
+}
+
+float Setting::getNodeValue( Node* node ){
+  float value;
+  eeprom_read_block((void*)&value, (void*)node->eepromAddress, sizeof(value));
+  return value;
+}
+
+void Setting::setNodeValue( Node* node, float setValue ){
+  eeprom_write_block((const void*)&setValue, (void*)node->eepromAddress, sizeof(setValue));
 }

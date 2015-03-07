@@ -2,9 +2,9 @@
 #define Setting_h
 
 #include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 #include <Arduino.h>
 #include <stdlib.h>
-#include <EEPROM.h>
 #include "Utilities.h"
 
 const static int MAX_NAME_SIZE = 35;
@@ -16,7 +16,7 @@ struct Node {
   prog_char* name;
   prog_char* desc;
   prog_char* unit;
-  float  value;
+  int    eepromAddress;
   Node*  next;
 };
 
@@ -38,6 +38,10 @@ class Setting{
     Node*  findNode( char* );
     bool   equal( char*, prog_char* );
     void   nodeDescription( char*, Node*);
+    void   setNodeValue( Node*, float );
+    float  getNodeValue( Node* );
+    bool   isNewFirmware();
+    bool   newFirmware_;
 };
  
 #endif
