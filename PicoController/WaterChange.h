@@ -4,6 +4,8 @@
 #include "Equip.h"
 #include "Ato.h"
 
+#define FILL_DELAY 5
+
 static prog_char WC_MAX_DISABLE_NAME[] PROGMEM = "WCMaxDisableTime";
 static prog_char WC_MAX_DISABLE_DESC[] PROGMEM = "Water change maximum time to be disabled";
 static prog_char WC_MAX_DISABLE_UNIT[] PROGMEM = "min";
@@ -28,10 +30,26 @@ class Waterchange: public Equip{
   public:
     Waterchange( Setting*, Clock*, Ato*, uint8_t, uint8_t );
     void check ();
+    bool getWCStatus();
     
   private:
     Ato*   ato_;
     Equip* fillPump_;
+    unsigned long wcStartTime_;
+    
+    void checkDrain( unsigned long );
+    void checkFill ( unsigned long );
+
+    unsigned long drainTimePerInterval();
+    int numberOfDrainIntervals();
+    unsigned long drainTimeBetweenIntervals();
+    bool currentlyFilling();
+    void drainOn();
+    void drainOff();
+    void fillOn();
+    void fillOff();
+    void atoDisable();
+    void atoEnable();
   
 };
 

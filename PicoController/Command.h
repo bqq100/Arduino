@@ -24,6 +24,7 @@
 #define TEMP_STATUS_MSG   F("Temperature      : ")
 #define HEAT_STATUS_MSG   F("Heater Status    : ")
 #define DOSER_STATUS_MSG  F("Doser Status     : ")
+#define WC_STATUS_MSG     F("WC Status        : ")
 #define LIGHT_STATUS_MSG  F("Light Brightness : ")
 #define FREE_MEMORY_MSG   F("Free Memory      : ")
 #define LO_ALARM_MSG      F("ALARM: LOW WATER ALARM IS ON ( Low switch has been on too long... )")

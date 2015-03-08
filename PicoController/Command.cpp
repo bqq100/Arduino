@@ -128,6 +128,8 @@ void Command::processCommand(){
     getEquipStatus( command, option, doser_, DOSER_STATUS_MSG );
   if ( stringsEqual(command, "heater") )
     getEquipStatus( command, option, temperature_, HEAT_STATUS_MSG );
+  if ( stringsEqual(command, "waterchange") || stringsEqual(command, "wc") )
+    getEquipStatus( command, option, wc_, WC_STATUS_MSG );
     
 }
 
@@ -263,6 +265,7 @@ void Command::getStatus( char* command, char* option ){
   output( HEAT_STATUS_MSG,   temperature_->getEquipStatus(), temperature_->getStatus() );
   output( RETURN_STATUS_MSG, returnPump_->getEquipStatus() , returnPump_->getStatus()  );
   output( DOSER_STATUS_MSG,  doser_->getEquipStatus()      , doser_->getStatus()       );
+  output( WC_STATUS_MSG,     wc_->getWCStatus()            , wc_->getStatus()          );
   output( FREE_MEMORY_MSG,   freeRam()                     , true                      );
 
   if ( ato_->getLoAlarm() )
