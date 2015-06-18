@@ -292,7 +292,3 @@ void Command::getStatus( char* command, char* option ){
   
   return;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 71ece8921ea3cc19be4d9c358dcdfa473f11255e
