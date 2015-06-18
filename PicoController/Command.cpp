@@ -129,7 +129,7 @@ void Command::processCommand(){
   if ( stringsEqual(command, "heater") )
     getEquipStatus( command, option, temperature_, HEAT_STATUS_MSG );
   if ( stringsEqual(command, "waterchange") || stringsEqual(command, "wc") )
-    getEquipStatus( command, option, wc_, WC_STATUS_MSG );
+    getWCStatus( command, option, wc_, WC_STATUS_MSG );
     
 }
 
@@ -158,6 +158,18 @@ void Command::getEquipStatus( char* command, char* option, T equip, const __Flas
   equip->check();
   output( message, equip->getEquipStatus(), equip->getStatus() );
 }  
+
+template <class T>
+void Command::getWCStatus( char* command, char* option, T equip, const __FlashStringHelper* message ){
+  if ( stringsEqual(option, "auto") )
+    equip->enable();
+  if ( stringsEqual(option, "off") )
+    equip->disable();
+  if ( stringsEqual(option, "on") )
+    equip->forceOn();
+  equip->check();
+  output( message, equip->getWCStatus(), equip->getStatus() );
+}
 
 void Command::getClock( char* command, char* option ){
   if ( strchr(option, ':') > 0 )
@@ -278,46 +290,3 @@ void Command::getStatus( char* command, char* option ){
   return;
 }
 
-
-
-
-
-
-
-/*
-void Command::getAto( String command, String option ){
-  if ( option == "enable" )
-    ato_->enable();
-  if ( option == "disable" )
-    ato_->disable(); 
-  ato_->check( clock_->getTime() );
-  output( ATO_STATUS_MSG, ato_->getEquipStatus(), ato_->getStatus() );
-}
-
-void Command::getReturn( String command, String option ){
-  if ( option == "enable" )
-    returnPump_->enable();
-  if ( option == "disable" )
-    returnPump_->disable();
-  returnPump_->check( clock_->getTime() );
-  output( RETURN_STATUS_MSG, returnPump_->getEquipStatus(), returnPump_->getStatus() );
-}
-
-void Command::getLight( String command, String option ){
-  if ( option == "enable" )
-    light_->enable();
-  if ( option == "disable" )
-    light_->disable();
-  light_->check( clock_->getTime() );
-  output( LIGHT_STATUS_MSG, light_->getBrightness(), light_->getStatus() );
-}
-
-void Command::getDoser( String command, String option ){
-  if ( option == "enable" )
-    doser_->enable();
-  if ( option == "disable" )
-    doser_->disable();
-  doser_->check( clock_->getTime() );
-  output( DOSER_STATUS_MSG, doser_->getEquipStatus(), doser_->getStatus() );
-}
-*/

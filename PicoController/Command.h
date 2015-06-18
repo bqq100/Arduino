@@ -15,6 +15,24 @@
 #include "Waterchange.h"
 
 // Message Defines
+/*
+#define STARTUP_MSG       F("Start...")
+#define TIME_MSG          F("Time: ")
+#define LO_SWITCH_MSG     F("Low: ")
+#define HI_SWITCH_MSG     F("High: ")
+#define ATO_STATUS_MSG    F("ATO: ")
+#define RETURN_STATUS_MSG F("Return: ")
+#define TEMP_STATUS_MSG   F("Temp: ")
+#define HEAT_STATUS_MSG   F("Heater: ")
+#define DOSER_STATUS_MSG  F("Doser: ")
+#define WC_STATUS_MSG     F("WC: ")
+#define LIGHT_STATUS_MSG  F("Light : ")
+#define FREE_MEMORY_MSG   F("Mem: ")
+#define LO_ALARM_MSG      F("ALARM: LOW")
+#define HI_ALARM_MSG      F("ALARM: HIGH")
+#define PUMP_ALARM_MSG    F("ALARM: PUMP")
+*/
+
 #define STARTUP_MSG       F("Controller Starting Up...")
 #define TIME_MSG          F("Time             : ")
 #define LO_SWITCH_MSG     F("Low Switch       : ")
@@ -77,6 +95,9 @@ class Command{
 
     template <class T> 
     void getEquipStatus( char*, char*, T, const __FlashStringHelper* );
+
+    template <class T>
+    void getWCStatus( char*, char*, T, const __FlashStringHelper* );
 
     void getClock  ( char*, char* );    
     void getStatus ( char*, char* );
