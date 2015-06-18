@@ -41,6 +41,9 @@ void Command::readChar(){
       if ( strlen(string_) == 0 )
         strcpy( string_, "status" );
       processCommand();
+      char nextChar = Serial.peek();
+      if ( nextChar == '\n' || nextChar == '\r' )
+        Serial.read();
       *string_ = (char) 0;
     }
     else{
@@ -137,10 +140,10 @@ template <class T>
 void Command::getLightStatus( char* command, char* option, T equip, const __FlashStringHelper* message ){
   if ( stringsEqual(option, "auto") )
     equip->enable();
-  if ( stringsEqual(option, "off") )
+  else if ( stringsEqual(option, "off") )
     equip->disable();
-  if ( stringsEqual(option, "on") )
-    equip->forceOn();
+  else if ( stringsEqual(option, "on") )
+    equip->lightOn( "100" );
   else if ( strlen(option) > 0 )
     equip->lightOn( option );
   equip->check();
@@ -151,9 +154,9 @@ template <class T>
 void Command::getEquipStatus( char* command, char* option, T equip, const __FlashStringHelper* message ){
   if ( stringsEqual(option, "auto") )
     equip->enable();
-  if ( stringsEqual(option, "off") )
+  else if ( stringsEqual(option, "off") )
     equip->disable(); 
-  if ( stringsEqual(option, "on") )
+  else if ( stringsEqual(option, "on") )
     equip->forceOn();
   equip->check();
   output( message, equip->getEquipStatus(), equip->getStatus() );
@@ -289,4 +292,7 @@ void Command::getStatus( char* command, char* option ){
   
   return;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 71ece8921ea3cc19be4d9c358dcdfa473f11255e
